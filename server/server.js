@@ -31,8 +31,20 @@ app.use(rateLimit({
 
 /* 🔥 FINAL CORS (WORKING + CLEAN) */
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://al-abraz.vercel.app",
+  "https://al-abraz-dblz9lks-toheed-solankis-projects.vercel.app"
+];
+
 app.use(cors({
-  origin: "*",
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, true); // allow temporarily
+    }
+  },
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
