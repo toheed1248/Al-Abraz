@@ -20,23 +20,33 @@ const AdminLogin = () => {
     return () => window.removeEventListener("popstate", handleBack);
   }, [navigate]);
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      alert("Please fill all fields");
-      return;
-    }
+ const handleLogin = async () => {
+  if (!email || !password) {
+    alert("Please fill all fields");
+    return;
+  }
 
-    try {
-      setLoading(true);
-      await loginAdmin({ email, password });
-      navigate("/admin/dashboard");
-    } catch (err) {
-      alert(err.response?.data?.msg || "Login failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
 
+    await loginAdmin({ email, password });
+
+    navigate("/admin/dashboard");
+
+  } catch (err) {
+    console.log("Login Error:", err);
+
+    const message =
+      err?.response?.data?.msg ||   // backend error
+      err?.message ||              // axios error
+      (typeof err === "string" ? err : "Login failed"); // fallback
+
+    alert(message);
+
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden px-4">
 
