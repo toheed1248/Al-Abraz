@@ -12,7 +12,7 @@ import galleryRoutes from "./routes/galleryRoutes.js";
 
 const app = express();
 
-/* 🔐 ENV CHECK (SAFE) */
+/* 🔐 ENV CHECK */
 const requiredEnv = ["MONGO_URI", "JWT_SECRET"];
 requiredEnv.forEach((key) => {
   if (!process.env[key]) {
@@ -21,15 +21,15 @@ requiredEnv.forEach((key) => {
   }
 });
 
-/* 🔐 SECURITY MIDDLEWARE */
+/* 🔐 SECURITY */
 app.use(helmet());
 
-/* 🔐 RATE LIMIT */
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
 }));
 
+/* 🔥 FINAL CORS (WORKING + CLEAN) */
 const corsOptions = {
   origin: [
     "http://localhost:5173",
@@ -39,23 +39,10 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
-
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("CORS not allowed"));
-    }
-  },
-  credentials: true,
-}));
-
 /* 🔐 BODY */
 app.use(express.json());
 
-/* 🔍 DEV LOG ONLY */
+/* 🔍 DEV LOG */
 if (process.env.NODE_ENV !== "production") {
   app.use((req, res, next) => {
     console.log(`${req.method} ${req.url}`);
@@ -85,9 +72,9 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ DB Connected");
 
-    app.listen(process.env.PORT || 5000, () =>
-      console.log(`🚀 Server running`)
-    );
+    app.listen(process.env.PORT || 5000, () => {
+      console.log("🚀 Server running");
+    });
   })
   .catch(() => {
     console.error("❌ DB Error");
