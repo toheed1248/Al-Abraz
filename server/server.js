@@ -33,7 +33,7 @@ app.use(rateLimit({
 /* 🔐 CORS (LOCKED) */
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://your-frontend.vercel.app",
+  "https://al-abraz.vercel.app",
 ];
 
 app.use(cors({

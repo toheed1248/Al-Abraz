@@ -1,12 +1,9 @@
 import axios from "axios";
-
-const API = "http://localhost:5000/api/gallery";
-
-/* 🔥 AUTO TOKEN ATTACH (BEST PRACTICE) */
 const api = axios.create({
-  baseURL: API,
+  baseURL: import.meta.env.VITE_API_URL + "/api/gallery",
 });
 
+/* 🔥 AUTO TOKEN ATTACH */
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
 
