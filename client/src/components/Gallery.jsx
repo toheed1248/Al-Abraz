@@ -21,14 +21,22 @@ const Gallery = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const fetchImages = async () => {
-    try {
-      const res = await getImages();
-      setImages(res.data.data || res.data || []);
-    } catch (err) {
-      console.log(err);
+const fetchImages = async () => {
+  try {
+    const res = await getImages();
+
+    // 🔥 FIXED VERSION
+    if (Array.isArray(res.data?.data)) {
+      setImages(res.data.data);
+    } else {
+      setImages([]);
     }
-  };
+
+  } catch (err) {
+    console.log(err);
+    setImages([]);
+  }
+};
 
   /* 🔥 INFINITE SCROLL */
   useEffect(() => {
