@@ -30,9 +30,11 @@ app.use(rateLimit({
 }));
 
 /* 🔥 FINAL CORS (WORKING + CLEAN) */
+
 app.use(cors({
-  origin: true,
-  credentials: true,
+  origin: "*",   // 🔥 allow all
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
 /* 🔐 BODY */
 app.use(express.json());
