@@ -1,0 +1,3 @@
+toheedsolanki58_db_user
+zjUbVm0Yr47g8FfC
+mongodb+srv://toheedsolanki58_db_user:zjUbVm0Yr47g8FfC@cluster0.9hdcebj.mongodb.net/

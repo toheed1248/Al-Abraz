@@ -1,0 +1,160 @@
+@import "tailwindcss";
+
+/* =========================
+   🔥 GLOBAL UTIL
+========================= */
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* =========================
+   🔥 ANIMATIONS
+========================= */
+
+@keyframes marqueeUltra {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-ultra {
+  animation: marqueeUltra 16s linear infinite;
+}
+
+.pause {
+  animation-play-state: paused;
+}
+
+/* =========================
+   🔥 PREMIUM TEXT
+========================= */
+
+.gold-text {
+  background: linear-gradient(90deg, #f5c542, #ffea9a, #f5c542);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow:
+    0 0 6px rgba(255, 200, 0, 0.3),
+    0 0 12px rgba(255, 200, 0, 0.2);
+}
+
+.gold-text:hover {
+  text-shadow:
+    0 0 10px rgba(255, 215, 0, 0.6),
+    0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+/* =========================
+   🔥 INPUT STYLES
+========================= */
+
+.input-premium {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 200, 0, 0.1);
+  outline: none;
+  color: white;
+}
+
+.input-premium:focus {
+  border-color: #facc15;
+  box-shadow: 0 0 0 1px rgba(255, 200, 0, 0.4);
+}
+
+/* =========================
+   🔥 ULTRA GLASS UI
+========================= */
+
+.glass-ultra {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 200, 0, 0.15);
+  border-radius: 24px;
+  box-shadow: 0 0 60px rgba(255, 200, 0, 0.05);
+}
+
+.input-ultra {
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 200, 0, 0.1);
+  color: white;
+  transition: 0.3s;
+}
+
+.input-ultra:focus {
+  border-color: #facc15;
+  box-shadow: 0 0 0 1px rgba(255, 200, 0, 0.4);
+}
+
+/* =========================
+   🔥 BUTTON
+========================= */
+
+.btn-ultra {
+  width: 100%;
+  margin-top: 10px;
+  background: linear-gradient(90deg, #facc15, #fde68a);
+  color: black;
+  padding: 14px;
+  border-radius: 999px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btn-ultra:hover {
+  transform: scale(1.03);
+}
+
+/* =========================
+   🔥 RTL SUPPORT (SAFE)
+========================= */
+
+/* Direction only */
+[dir="rtl"] {
+  direction: rtl;
+}
+
+/* Text alignment fix */
+[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+[dir="rtl"] .text-right {
+  text-align: left;
+}
+
+/* ⚠️ IMPORTANT:
+   NEVER DO THIS:
+   [dir="rtl"] .flex { flex-direction: row-reverse; }
+   It breaks entire layout ❌
+*/
+
+/* Optional helper class (use manually) */
+.rtl-flex {
+  flex-direction: row-reverse;
+}
+
+/* =========================
+   🔥 FOOTER IMAGE HOVER
+========================= */
+
+footer img {
+  transition: 0.3s;
+}
+
+footer img:hover {
+  transform: scale(1.05);
+}
