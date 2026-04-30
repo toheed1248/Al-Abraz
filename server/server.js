@@ -32,7 +32,7 @@ app.use(rateLimit({
 /* 🔥 FINAL CORS (WORKING + CLEAN) */
 
 app.use(cors({
-  origin: "*",   // 🔥 allow all
+  origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
