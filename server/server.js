@@ -30,11 +30,16 @@ app.use(rateLimit({
   max: 100,
 }));
 
-/* 🔐 CORS (LOCKED) */
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://al-abraz.vercel.app",
-];
+const corsOptions = {
+  origin: [
+    "http://localhost:5173",
+    "https://al-abraz.vercel.app"
+  ],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(cors({
   origin: function (origin, callback) {

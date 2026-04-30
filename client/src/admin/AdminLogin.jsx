@@ -93,6 +93,7 @@ const AdminLogin = () => {
             className="
               w-full p-3 rounded-xl
               bg-black/60
+              text-white placeholder-gray-400 caret-yellow-400
               border border-yellow-500/10
               outline-none
               focus:border-yellow-500
@@ -115,6 +116,7 @@ const AdminLogin = () => {
             className="
               w-full p-3 rounded-xl
               bg-black/60
+              text-white placeholder-gray-400 caret-yellow-400
               border border-yellow-500/10
               outline-none
               focus:border-yellow-500
