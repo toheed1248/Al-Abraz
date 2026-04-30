@@ -24,9 +24,13 @@ const Gallery = () => {
   const fetchImages = async () => {
     try {
       const res = await getImages();
-      setImages(res.data.data || res.data || []);
+
+      // 🔥 SAFE DATA HANDLING (FIX)
+      setImages(Array.isArray(res.data?.data) ? res.data.data : []);
+
     } catch (err) {
       console.log(err);
+      setImages([]); // fallback safety
     }
   };
 
@@ -46,8 +50,8 @@ const Gallery = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Mode-based filtering (same logic)
-  const filteredImages = images.filter((item) => {
+  // 🔥 SAFE FILTER (FIX)
+  const filteredImages = (Array.isArray(images) ? images : []).filter((item) => {
     if (mode === "masna") return item.category === "masna";
     if (mode === "contractor") return item.category === "contractor";
     return true;
@@ -56,7 +60,7 @@ const Gallery = () => {
   return (
     <div className="bg-black text-white py-20 px-4 md:px-20">
       
-      {/* 🔥 HEADER - Same theme */}
+      {/* 🔥 HEADER */}
       <motion.div 
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -72,7 +76,7 @@ const Gallery = () => {
         </p>
       </motion.div>
 
-      {/* 🔥 CLASSIC GRID - 3 Column Layout */}
+      {/* 🔥 GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
         
         {filteredImages.length === 0 ? (
@@ -99,59 +103,37 @@ const Gallery = () => {
                          transition-all duration-700 cursor-pointer
                          hover:-translate-y-3 hover:scale-[1.02]"
               onClick={() => setSelected(item)}
-              whileHover={{ 
-                scale: 1.02,
-                rotateX: 5,
-                rotateY: 5
-              }}
             >
-              {/* 🔥 IMAGE */}
+              {/* IMAGE */}
               <div className="relative h-64 md:h-72 overflow-hidden">
                 <img
                   src={item.imageUrl}
                   loading="lazy"
                   className="w-full h-full object-cover 
                             group-hover:scale-110 group-hover:brightness-125
-                            transition-all duration-700 ease-out"
+                            transition-all duration-700"
                 />
-                
-                {/* 🔥 Gradient Overlay */}
-                <div className="absolute inset-0 
-                               bg-gradient-to-t from-black/80 via-black/40 to-transparent
-                               group-hover:from-black/60 group-hover:via-black/20
-                               transition-all duration-700" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
               </div>
 
-              {/* 🔥 CONTENT */}
+              {/* CONTENT */}
               <div className="p-8">
-                <h2 className="text-yellow-400 text-xl md:text-2xl font-bold mb-3 
-                              group-hover:text-yellow-300 transition-colors duration-300
-                              line-clamp-1">
+                <h2 className="text-yellow-400 text-xl font-bold mb-3">
                   {item.title?.[lang] || item.title?.en}
                 </h2>
 
-                <p className="text-gray-300 text-base leading-relaxed mb-6 
-                             line-clamp-3 group-hover:line-clamp-4
-                             transition-all duration-300">
+                <p className="text-gray-300 mb-6">
                   {item.description?.[lang] || item.description?.en}
                 </p>
 
-                {/* 🔥 BOTTOM BAR */}
-                <div className="flex items-center justify-between pt-4 border-t border-yellow-500/20">
-                  <div className="flex items-center gap-3 text-sm text-gray-400">
-                    <span className="flex items-center gap-2">
-                      <i className="fas fa-map-marker-alt text-yellow-400"></i>
-                      {item.location || "Kuwait"}
-                    </span>
-                  </div>
+                <div className="flex justify-between border-t border-yellow-500/20 pt-4">
+                  <span className="text-gray-400 text-sm">
+                    {item.location || "Kuwait"}
+                  </span>
 
-                  <div className="bg-gradient-to-r from-yellow-500/20 to-yellow-600/20
-                                 border border-yellow-500/30
-                                 text-yellow-400 px-5 py-2 rounded-2xl font-semibold
-                                 text-sm shadow-lg hover:shadow-yellow-500/30
-                                 transition-all duration-300 hover:scale-105">
+                  <span className="text-yellow-400 text-sm">
                     {item.category}
-                  </div>
+                  </span>
                 </div>
               </div>
             </motion.div>
@@ -159,88 +141,35 @@ const Gallery = () => {
         )}
       </div>
 
-      {/* 🔥 LOAD MORE */}
+      {/* LOAD MORE */}
       <div ref={loader} className="h-20 flex justify-center items-center">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex items-center gap-3 text-gray-500 text-lg font-medium"
-        >
-          <div className="w-8 h-8 border-3 border-yellow-400/30 border-t-yellow-400 rounded-full animate-spin"></div>
-          <span>Loading more...</span>
-        </motion.div>
+        <div className="w-8 h-8 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
       </div>
 
-      {/* 🔥 PREMIUM MODAL - Enhanced */}
+      {/* MODAL */}
       <AnimatePresence>
         {selected && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-6"
+            className="fixed inset-0 bg-black/90 flex items-center justify-center z-50"
             onClick={() => setSelected(null)}
           >
             <motion.div
-              initial={{ scale: 0.7, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.7, opacity: 0 }}
-              className="w-full max-w-4xl max-h-[90vh] relative bg-gradient-to-b from-[#111] to-[#0a0a0a]
-                         rounded-3xl border-2 border-yellow-500/30 shadow-4xl shadow-yellow-500/20
-                         backdrop-blur-xl overflow-hidden"
+              className="bg-[#111] p-6 rounded-3xl max-w-3xl w-full"
               onClick={(e) => e.stopPropagation()}
             >
-              
-              {/* 🔥 CLOSE BUTTON */}
-              <motion.button
-                onClick={() => setSelected(null)}
-                className="absolute top-6 right-6 w-14 h-14 bg-black/50 hover:bg-yellow-500/20
-                           border-2 border-yellow-500/50 rounded-2xl flex items-center justify-center
-                           text-2xl text-yellow-400 hover:text-white transition-all duration-300
-                           backdrop-blur-xl shadow-2xl hover:scale-110 z-10"
-                whileHover={{ rotate: 90 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <i className="fas fa-times"></i>
-              </motion.button>
+              <img src={selected.imageUrl} className="w-full rounded-xl mb-4" />
 
-              {/* 🔥 IMAGE */}
-              <div className="relative h-[60vh] md:h-[70vh] overflow-hidden">
-                <img
-                  src={selected.imageUrl}
-                  className="w-full h-full object-contain"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-              </div>
+              <h2 className="text-yellow-400 text-2xl mb-2">
+                {selected.title?.[lang] || selected.title?.en}
+              </h2>
 
-              {/* 🔥 CONTENT */}
-              <div className="p-10">
-                <h2 className="text-4xl md:text-5xl font-bold text-yellow-400 mb-6 
-                              bg-gradient-to-r from-yellow-400 to-yellow-300 bg-clip-text text-transparent">
-                  {selected.title?.[lang] || selected.title?.en}
-                </h2>
-                
-                <p className="text-gray-200 text-xl leading-relaxed mb-8 max-w-3xl">
-                  {selected.description?.[lang] || selected.description?.en}
-                </p>
+              <p className="text-gray-300 mb-4">
+                {selected.description?.[lang] || selected.description?.en}
+              </p>
 
-                <div className="flex items-center justify-between pt-6 border-t border-yellow-500/30">
-                  <div className="flex items-center gap-6 text-lg text-gray-300">
-                    <span className="flex items-center gap-3">
-                      <i className="fas fa-map-marker-alt text-yellow-400 text-xl"></i>
-                      <span>{selected.location || "Kuwait"}</span>
-                    </span>
-                  </div>
-                  
-                  <div className="bg-gradient-to-r from-yellow-500/30 to-yellow-600/30
-                                 border-2 border-yellow-500/50
-                                 text-yellow-400 px-8 py-4 rounded-3xl font-bold text-xl
-                                 shadow-2xl shadow-yellow-500/30 hover:shadow-yellow-500/50
-                                 transition-all duration-300 hover:scale-105">
-                    {selected.category}
-                  </div>
-                </div>
-              </div>
+              <span className="text-gray-400">
+                {selected.location}
+              </span>
             </motion.div>
           </motion.div>
         )}

@@ -1,25 +1,11 @@
-import axios from "axios";
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL + "/api/gallery",
-});
-
-/* 🔥 AUTO TOKEN ATTACH */
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
-  return config;
-});
+import API from "./api";
 
 /* ================= GET ================= */
-export const getImages = () => api.get("/");
+export const getImages = () => API.get("/gallery");
 
 /* ================= UPLOAD ================= */
 export const uploadImage = (data) =>
-  api.post("/upload", data, {
+  API.post("/gallery/upload", data, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -27,8 +13,8 @@ export const uploadImage = (data) =>
 
 /* ================= DELETE ================= */
 export const deleteImage = (id) =>
-  api.delete(`/${id}`);
+  API.delete(`/gallery/${id}`);
 
 /* ================= UPDATE ================= */
 export const updateImage = (id, data) =>
-  api.put(`/${id}`, data);
+  API.put(`/gallery/${id}`, data);

@@ -14,8 +14,8 @@ export const loginAdmin = async (req, res) => {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
-    /* 🔐 RATE LIMIT (5 ATTEMPTS / 15 MIN) */
-    const ip = req.ip;
+    /* 🔐 RATE LIMIT */
+    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
     if (!loginAttempts[ip]) loginAttempts[ip] = { count: 0, time: Date.now() };
 
     const attempt = loginAttempts[ip];
@@ -27,7 +27,6 @@ export const loginAdmin = async (req, res) => {
     /* 🔍 FIND ADMIN */
     const admin = await Admin.findOne({ email });
 
-    /* 🔐 GENERIC ERROR (NO INFO LEAK) */
     if (!admin) {
       attempt.count++;
       return res.status(400).json({ msg: "Invalid credentials" });
@@ -40,27 +39,51 @@ export const loginAdmin = async (req, res) => {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
-    /* ✅ RESET ATTEMPTS ON SUCCESS */
+    /* ✅ RESET ATTEMPTS */
     loginAttempts[ip] = { count: 0, time: Date.now() };
-
-    /* 🔐 JWT SECRET CHECK */
-    if (!process.env.JWT_SECRET) {
-      throw new Error("JWT_SECRET missing");
-    }
 
     /* 🔐 TOKEN */
     const token = jwt.sign(
       { id: admin._id },
       process.env.JWT_SECRET,
-      {
-        expiresIn: "7d",
-      }
+      { expiresIn: "7d" }
     );
 
     res.json({ token });
 
   } catch (err) {
-    /* ❌ DON'T LEAK INTERNAL ERROR */
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+
+/* 🚀 CREATE ADMIN (TEMPORARY) */
+export const createAdmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ msg: "All fields required" });
+    }
+
+    const existing = await Admin.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ msg: "Admin already exists" });
+    }
+
+    const hashed = await bcrypt.hash(password, 10);
+
+    const admin = await Admin.create({
+      email,
+      password: hashed,
+    });
+
+    res.status(201).json({
+      success: true,
+      msg: "Admin created",
+    });
+
+  } catch (err) {
     res.status(500).json({ msg: "Server error" });
   }
 };
