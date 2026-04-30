@@ -12,14 +12,12 @@ import galleryRoutes from "./routes/galleryRoutes.js";
 
 const app = express();
 
-/* 🔐 ENV CHECK */
-const requiredEnv = ["MONGO_URI", "JWT_SECRET"];
-requiredEnv.forEach((key) => {
-  if (!process.env[key]) {
-    console.error(`❌ Missing ENV: ${key}`);
-    process.exit(1);
-  }
-});
+/* 🔥 CORS (FIRST — VERY IMPORTANT) */
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 
 /* 🔐 SECURITY */
 app.use(helmet());
@@ -29,54 +27,24 @@ app.use(rateLimit({
   max: 100,
 }));
 
-/* 🔥 FINAL CORS (WORKING + CLEAN) */
-
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://al-abraz.vercel.app",
-  "https://al-abraz-dblz9lks-toheed-solankis-projects.vercel.app"
-];
-
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(null, true); // allow temporarily
-    }
-  },
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
 /* 🔐 BODY */
 app.use(express.json());
-
-/* 🔍 DEV LOG */
-if (process.env.NODE_ENV !== "production") {
-  app.use((req, res, next) => {
-    console.log(`${req.method} ${req.url}`);
-    next();
-  });
-}
 
 /* 🔗 ROUTES */
 app.use("/api/auth", authRoutes);
 app.use("/api/gallery", galleryRoutes);
 
-/* ❌ NOT FOUND */
+/* ROOT */
+app.get("/", (req, res) => {
+  res.send("API running 🚀");
+});
+
+/* NOT FOUND */
 app.use((req, res) => {
   res.status(404).json({ msg: "Route not found" });
 });
 
-/* 🔐 ERROR HANDLER */
-app.use((err, req, res, next) => {
-  if (process.env.NODE_ENV !== "production") {
-    console.error(err.stack);
-  }
-  res.status(500).json({ msg: "Server error" });
-});
-
-/* 🔌 DB CONNECT */
+/* DB CONNECT */
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ DB Connected");
