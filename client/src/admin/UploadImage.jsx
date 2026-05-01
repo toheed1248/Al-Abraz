@@ -1,158 +1,203 @@
-import { useState } from "react";
-import { uploadImage } from "../services/galleryService";
-import { FaUpload, FaImage } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
+import { getImages } from "../services/galleryService";
+import { useMode } from "../context/ModeContext";
+import { useLang } from "../context/LanguageContext";
+import { motion, AnimatePresence } from "framer-motion";
 
-const UploadImage = () => {
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
+const Gallery = () => {
+  const [images, setImages] = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [visible, setVisible] = useState(6);
+  const [scale, setScale] = useState(1);
 
-  const [titleEn, setTitleEn] = useState("");
-  const [titleAr, setTitleAr] = useState("");
+  const loader = useRef(null);
+  const isFetching = useRef(false);
 
-  const [descEn, setDescEn] = useState("");   // ✅ NEW
-  const [descAr, setDescAr] = useState("");   // ✅ NEW
+  const { mode } = useMode();
+  const { lang } = useLang();
 
-  const [location, setLocation] = useState(""); // ✅ NEW
-
-  const [category, setCategory] = useState("masna");
-  const [loading, setLoading] = useState(false);
-
-  const handleFile = (e) => {
-    const img = e.target.files[0];
-    setFile(img);
-    setPreview(URL.createObjectURL(img));
-  };
-
-  const suggestArabic = () => {
-    if (!titleEn) return;
-    setTitleAr("🔤 " + titleEn + " (Arabic)");
-  };
-
-  const handleUpload = async () => {
-    if (!file) return alert("Select image");
-
-    const formData = new FormData();
-    formData.append("image", file);
-    formData.append("title_en", titleEn);
-    formData.append("title_ar", titleAr);
-
-    formData.append("desc_en", descEn);   // ✅ ADD
-    formData.append("desc_ar", descAr);   // ✅ ADD
-
-    formData.append("location", location); // ✅ ADD
-
-    formData.append("category", category);
+  /* ================= FETCH ================= */
+  const fetchImages = async () => {
+    if (isFetching.current) return;
+    isFetching.current = true;
 
     try {
-      setLoading(true);
-      await uploadImage(formData);
+      const res = await getImages();
 
-      alert("Upload Success 🚀");
+      let data = [];
+      if (Array.isArray(res)) data = res;
+      else if (Array.isArray(res?.data)) data = res.data;
+      else if (Array.isArray(res?.data?.data)) data = res.data.data;
 
-      // reset
-      setFile(null);
-      setPreview(null);
-      setTitleEn("");
-      setTitleAr("");
-      setDescEn("");   // ✅ RESET
-      setDescAr("");   // ✅ RESET
-      setLocation(""); // ✅ RESET
-
+      setImages(data);
     } catch (err) {
-      alert(err.response?.data?.msg || "Upload failed");
+      console.log(err);
+      setImages([]);
     } finally {
-      setLoading(false);
+      isFetching.current = false;
     }
   };
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="max-w-lg mx-auto bg-white/10 backdrop-blur-lg p-6 rounded-2xl shadow-xl text-white"
-    >
-      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-        <FaUpload /> Upload Work
-      </h2>
+  useEffect(() => {
+    fetchImages();
+  }, []);
 
-      {/* IMAGE PREVIEW */}
-      <div className="mb-4">
-        {preview ? (
-          <img src={preview} className="w-full h-48 object-cover rounded-xl" />
-        ) : (
-          <div className="h-48 bg-gray-800 flex items-center justify-center rounded-xl">
-            <FaImage size={30} />
+  /* ================= INFINITE SCROLL ================= */
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisible((prev) => prev + 6);
+        }
+      },
+      { threshold: 1 }
+    );
+
+    if (loader.current) observer.observe(loader.current);
+    return () => observer.disconnect();
+  }, []);
+
+  /* ================= FILTER ================= */
+  const filteredImages = images.filter((item) => {
+    if (mode === "masna") return item.category === "masna";
+    if (mode === "contractor") return item.category === "contractor";
+    return true;
+  });
+
+  /* ================= ZOOM HANDLER ================= */
+  const handleZoom = (e) => {
+    e.preventDefault();
+    setScale((prev) =>
+      e.deltaY < 0 ? Math.min(prev + 0.2, 3) : Math.max(prev - 0.2, 1)
+    );
+  };
+
+  return (
+    <div className="bg-black text-white py-20 px-4 md:px-20">
+
+      {/* HEADER */}
+      <motion.div
+        initial={{ opacity: 0, y: -40 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center mb-20"
+      >
+        <h1 className="text-4xl md:text-6xl font-bold text-yellow-400 mb-4">
+          {lang === "ar" ? "المعرض" : "Gallery"}
+        </h1>
+        <p className="text-gray-400 text-lg">
+          {lang === "ar"
+            ? "استكشف أعمالنا الفاخرة"
+            : "Explore our premium work"}
+        </p>
+      </motion.div>
+
+      {/* GRID */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+        {filteredImages.length === 0 ? (
+          <div className="col-span-full text-center py-32">
+            <p className="text-gray-500 text-xl">
+              No projects uploaded yet 🚀
+            </p>
           </div>
+        ) : (
+          filteredImages.slice(0, visible).map((item, i) => (
+            <motion.div
+              key={item._id}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="group bg-gradient-to-b from-[#111] to-[#0a0a0a]
+                         rounded-3xl border border-yellow-500/20
+                         overflow-hidden shadow-lg cursor-pointer
+                         hover:-translate-y-2 transition-all"
+              onClick={() => {
+                setSelected(item);
+                setScale(1);
+              }}
+            >
+              <div className="relative h-64 overflow-hidden">
+                <img
+                  src={item.imageUrl}
+                  loading="lazy"
+                  className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                />
+              </div>
+
+              <div className="p-6">
+                <h2 className="text-yellow-400 text-xl font-bold mb-2">
+                  {item.title?.[lang] || item.title?.en}
+                </h2>
+
+                <p className="text-gray-400 line-clamp-2 mb-2">
+                  {item.description?.[lang] || item.description?.en}
+                </p>
+
+                {item.location && (
+                  <p className="text-xs text-yellow-400/80">
+                    📍 {item.location}
+                  </p>
+                )}
+              </div>
+            </motion.div>
+          ))
         )}
       </div>
 
-      <input type="file" onChange={handleFile} className="mb-4 w-full text-sm" />
+      {/* LOAD MORE */}
+      <div ref={loader} className="h-20 flex justify-center items-center">
+        <div className="text-gray-500">Loading more...</div>
+      </div>
 
-      {/* TITLE EN */}
-      <input
-        placeholder="Title (English)"
-        value={titleEn}
-        onChange={(e) => setTitleEn(e.target.value)}
-        className="input-premium"
-      />
+      {/* ================= MODAL ================= */}
+      <AnimatePresence>
+        {selected && (
+          <motion.div
+            className="fixed inset-0 bg-black/95 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelected(null)}
+          >
+            {/* CLOSE BUTTON */}
+            <button
+              className="absolute top-6 right-6 text-white text-3xl z-50"
+              onClick={() => setSelected(null)}
+            >
+              ✕
+            </button>
 
-      {/* ARABIC */}
-      <button onClick={suggestArabic} className="text-sm mb-2 text-yellow-400">
-        Suggest Arabic →
-      </button>
+            {/* IMAGE */}
+            <motion.img
+              src={selected.imageUrl}
+              onWheel={handleZoom}
+              style={{ scale }}
+              className="max-h-[85vh] max-w-[90vw] rounded-2xl shadow-2xl cursor-zoom-in"
+              onClick={(e) => e.stopPropagation()}
+              drag
+              dragConstraints={{ left: -200, right: 200, top: -200, bottom: 200 }}
+            />
 
-      <input
-        placeholder="Title (Arabic)"
-        value={titleAr}
-        onChange={(e) => setTitleAr(e.target.value)}
-        className="input-premium"
-      />
+            {/* DETAILS */}
+            <div className="absolute bottom-6 text-center text-white px-4">
+              <h2 className="text-xl text-yellow-400 font-bold">
+                {selected.title?.[lang] || selected.title?.en}
+              </h2>
 
-      {/* 🔥 DESCRIPTION EN */}
-      <textarea
-        placeholder="Description (English)"
-        value={descEn}
-        onChange={(e) => setDescEn(e.target.value)}
-        className="input-premium"
-      />
+              <p className="text-gray-300 text-sm mt-1">
+                {selected.description?.[lang] || selected.description?.en}
+              </p>
 
-      {/* 🔥 DESCRIPTION AR */}
-      <textarea
-        placeholder="Description (Arabic)"
-        value={descAr}
-        onChange={(e) => setDescAr(e.target.value)}
-        className="input-premium"
-      />
-
-      {/* 🔥 LOCATION */}
-      <input
-        placeholder="Location (e.g. Kuwait, Salmiya)"
-        value={location}
-        onChange={(e) => setLocation(e.target.value)}
-        className="input-premium"
-      />
-
-      {/* CATEGORY */}
-      <select
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        className="input-premium"
-      >
-        <option value="masna">Masna</option>
-        <option value="contractor">Contractor</option>
-      </select>
-
-      {/* BUTTON */}
-      <button
-        onClick={handleUpload}
-        className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 rounded-lg transition"
-      >
-        {loading ? "Uploading..." : "Upload Now"}
-      </button>
-
-    </motion.div>
+              {selected.location && (
+                <p className="text-yellow-400 text-xs mt-1">
+                  📍 {selected.location}
+                </p>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
 
-export default UploadImage;
+export default Gallery;
