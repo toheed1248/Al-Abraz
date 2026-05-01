@@ -8,6 +8,7 @@ const Gallery = () => {
   const [images, setImages] = useState([]);
   const [selected, setSelected] = useState(null);
   const [visible, setVisible] = useState(6);
+  const [scale, setScale] = useState(1);
 
   const loader = useRef(null);
   const isFetching = useRef(false);
@@ -15,7 +16,7 @@ const Gallery = () => {
   const { mode } = useMode();
   const { lang } = useLang();
 
-  /* ================= FETCH (FINAL FIX) ================= */
+  /* ================= FETCH ================= */
   const fetchImages = async () => {
     if (isFetching.current) return;
     isFetching.current = true;
@@ -23,19 +24,12 @@ const Gallery = () => {
     try {
       const res = await getImages();
 
-      // 🔥 UNIVERSAL HANDLER (OLD + NEW BOTH SUPPORT)
       let data = [];
-
-      if (Array.isArray(res)) {
-        data = res;
-      } else if (Array.isArray(res?.data)) {
-        data = res.data;
-      } else if (Array.isArray(res?.data?.data)) {
-        data = res.data.data;
-      }
+      if (Array.isArray(res)) data = res;
+      else if (Array.isArray(res?.data)) data = res.data;
+      else if (Array.isArray(res?.data?.data)) data = res.data.data;
 
       setImages(data);
-
     } catch (err) {
       console.log(err);
       setImages([]);
@@ -60,7 +54,6 @@ const Gallery = () => {
     );
 
     if (loader.current) observer.observe(loader.current);
-
     return () => observer.disconnect();
   }, []);
 
@@ -71,12 +64,20 @@ const Gallery = () => {
     return true;
   });
 
+  /* ================= ZOOM HANDLER ================= */
+  const handleZoom = (e) => {
+    e.preventDefault();
+    setScale((prev) =>
+      e.deltaY < 0 ? Math.min(prev + 0.2, 3) : Math.max(prev - 0.2, 1)
+    );
+  };
+
   return (
     <div className="bg-black text-white py-20 px-4 md:px-20">
 
       {/* HEADER */}
-      <motion.div 
-        initial={{ opacity: 0, y: -50 }}
+      <motion.div
+        initial={{ opacity: 0, y: -40 }}
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-20"
       >
@@ -90,9 +91,8 @@ const Gallery = () => {
         </p>
       </motion.div>
 
-      {/* 🔥 PREMIUM GRID (UNCHANGED UI) */}
+      {/* GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
-        
         {filteredImages.length === 0 ? (
           <div className="col-span-full text-center py-32">
             <p className="text-gray-500 text-xl">
@@ -106,17 +106,20 @@ const Gallery = () => {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="group bg-gradient-to-b from-[#111] to-[#0a0a0a] 
-                         rounded-3xl border border-yellow-500/20 
+              className="group bg-gradient-to-b from-[#111] to-[#0a0a0a]
+                         rounded-3xl border border-yellow-500/20
                          overflow-hidden shadow-lg cursor-pointer
                          hover:-translate-y-2 transition-all"
-              onClick={() => setSelected(item)}
+              onClick={() => {
+                setSelected(item);
+                setScale(1);
+              }}
             >
               <div className="relative h-64 overflow-hidden">
                 <img
                   src={item.imageUrl}
                   loading="lazy"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
                 />
               </div>
 
@@ -125,9 +128,15 @@ const Gallery = () => {
                   {item.title?.[lang] || item.title?.en}
                 </h2>
 
-                <p className="text-gray-400 line-clamp-2">
+                <p className="text-gray-400 line-clamp-2 mb-2">
                   {item.description?.[lang] || item.description?.en}
                 </p>
+
+                {item.location && (
+                  <p className="text-xs text-yellow-400/80">
+                    📍 {item.location}
+                  </p>
+                )}
               </div>
             </motion.div>
           ))
@@ -139,15 +148,50 @@ const Gallery = () => {
         <div className="text-gray-500">Loading more...</div>
       </div>
 
-      {/* MODAL */}
+      {/* ================= MODAL ================= */}
       <AnimatePresence>
         {selected && (
           <motion.div
-            className="fixed inset-0 bg-black/90 flex items-center justify-center"
+            className="fixed inset-0 bg-black/95 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             onClick={() => setSelected(null)}
           >
-            <div onClick={(e) => e.stopPropagation()}>
-              <img src={selected.imageUrl} className="max-h-[80vh]" />
+            {/* CLOSE BUTTON */}
+            <button
+              className="absolute top-6 right-6 text-white text-3xl z-50"
+              onClick={() => setSelected(null)}
+            >
+              ✕
+            </button>
+
+            {/* IMAGE */}
+            <motion.img
+              src={selected.imageUrl}
+              onWheel={handleZoom}
+              style={{ scale }}
+              className="max-h-[85vh] max-w-[90vw] rounded-2xl shadow-2xl cursor-zoom-in"
+              onClick={(e) => e.stopPropagation()}
+              drag
+              dragConstraints={{ left: -200, right: 200, top: -200, bottom: 200 }}
+            />
+
+            {/* DETAILS */}
+            <div className="absolute bottom-6 text-center text-white px-4">
+              <h2 className="text-xl text-yellow-400 font-bold">
+                {selected.title?.[lang] || selected.title?.en}
+              </h2>
+
+              <p className="text-gray-300 text-sm mt-1">
+                {selected.description?.[lang] || selected.description?.en}
+              </p>
+
+              {selected.location && (
+                <p className="text-yellow-400 text-xs mt-1">
+                  📍 {selected.location}
+                </p>
+              )}
             </div>
           </motion.div>
         )}
