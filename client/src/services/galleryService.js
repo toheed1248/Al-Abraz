@@ -1,33 +1,20 @@
 import API from "./api";
 
-/* 🔥 SAFE RESPONSE HANDLER */
-const handleResponse = (res) => {
-  // backend structure: { success: true, data: [...] }
-  return res?.data?.data || [];
-};
-
-/* 🔥 SAFE ERROR HANDLER */
-const handleError = (err) => {
-  console.error("API ERROR:", err);
-
-  if (err.response) {
-    // server responded
-    throw err.response.data?.msg || "Server error";
-  } else if (err.request) {
-    // no response
-    throw "Network error (server not responding)";
-  } else {
-    throw err.message || "Unexpected error";
-  }
+/* 🔥 NORMALIZER (ADMIN + USER SAME DATA) */
+const normalize = (res) => {
+  if (Array.isArray(res)) return res;
+  if (Array.isArray(res?.data)) return res.data;
+  if (Array.isArray(res?.data?.data)) return res.data.data;
+  return [];
 };
 
 /* ================= GET ================= */
 export const getImages = async () => {
   try {
     const res = await API.get("/gallery");
-    return handleResponse(res);
+    return normalize(res.data); // 🔥 ALWAYS ARRAY
   } catch (err) {
-    handleError(err);
+    console.error("GET ERROR:", err);
     return [];
   }
 };
@@ -40,10 +27,10 @@ export const uploadImage = async (data) => {
         "Content-Type": "multipart/form-data",
       },
     });
-
     return res.data;
   } catch (err) {
-    handleError(err);
+    console.error("UPLOAD ERROR:", err);
+    throw err;
   }
 };
 
@@ -53,7 +40,8 @@ export const deleteImage = async (id) => {
     const res = await API.delete(`/gallery/${id}`);
     return res.data;
   } catch (err) {
-    handleError(err);
+    console.error("DELETE ERROR:", err);
+    throw err;
   }
 };
 
@@ -63,6 +51,7 @@ export const updateImage = async (id, data) => {
     const res = await API.put(`/gallery/${id}`, data);
     return res.data;
   } catch (err) {
-    handleError(err);
+    console.error("UPDATE ERROR:", err);
+    throw err;
   }
 };

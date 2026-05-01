@@ -24,18 +24,13 @@ const ManageGallery = () => {
   }, []);
 
   const fetchImages = async () => {
-    try {
-      const res = await getImages();
-
-      const data = Array.isArray(res?.data)
-        ? res.data
-        : res?.data?.data || [];
-
-      setImages(data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  try {
+    const data = await getImages(); // ✅ same logic
+    setImages(data);
+  } catch (err) {
+    console.log(err);
+  }
+};
 
   /* DELETE */
   const handleDelete = async (id) => {
