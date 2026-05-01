@@ -10,21 +10,21 @@ const Gallery = () => {
   const [visible, setVisible] = useState(6);
 
   const loader = useRef(null);
-  const isFetching = useRef(false); // 🔥 anti-spam
+  const isFetching = useRef(false);
 
   const { mode } = useMode();
   const { lang } = useLang();
 
-  /* ================= FETCH ================= */
+  /* ================= FETCH (FIXED) ================= */
   const fetchImages = async () => {
-    if (isFetching.current) return; // 🔥 prevent spam
+    if (isFetching.current) return;
     isFetching.current = true;
 
     try {
-      const res = await getImages();
+      const data = await getImages(); // ✅ already array
 
-      if (Array.isArray(res.data?.data)) {
-        setImages(res.data.data);
+      if (Array.isArray(data)) {
+        setImages(data);
       } else {
         setImages([]);
       }
@@ -41,9 +41,6 @@ const Gallery = () => {
   useEffect(() => {
     fetchImages();
   }, []);
-
-  /* ❌ REMOVE THIS (IMPORTANT) */
-  // setInterval(fetchImages, 5000);
 
   /* ================= INFINITE SCROLL ================= */
   useEffect(() => {
@@ -71,7 +68,6 @@ const Gallery = () => {
   return (
     <div className="bg-black text-white py-20 px-4 md:px-20">
 
-      {/* HEADER */}
       <motion.div 
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -87,7 +83,6 @@ const Gallery = () => {
         </p>
       </motion.div>
 
-      {/* GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
         
         {filteredImages.length === 0 ? (
@@ -131,12 +126,10 @@ const Gallery = () => {
         )}
       </div>
 
-      {/* LOAD MORE */}
       <div ref={loader} className="h-20 flex justify-center items-center">
         <div className="text-gray-500">Loading more...</div>
       </div>
 
-      {/* MODAL */}
       <AnimatePresence>
         {selected && (
           <motion.div
