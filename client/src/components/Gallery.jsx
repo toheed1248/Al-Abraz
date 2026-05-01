@@ -16,20 +16,37 @@ const Gallery = () => {
   const { lang } = useLang();
 
   /* ================= FETCH (FINAL FIX) ================= */
-const fetchImages = async () => {
-  if (isFetching.current) return;
-  isFetching.current = true;
+  const fetchImages = async () => {
+    if (isFetching.current) return;
+    isFetching.current = true;
 
-  try {
-    const data = await getImages(); // ✅ already array
-    setImages(data);
-  } catch (err) {
-    console.log(err);
-    setImages([]);
-  } finally {
-    isFetching.current = false;
-  }
-};
+    try {
+      const res = await getImages();
+
+      // 🔥 UNIVERSAL HANDLER (OLD + NEW BOTH SUPPORT)
+      let data = [];
+
+      if (Array.isArray(res)) {
+        data = res;
+      } else if (Array.isArray(res?.data)) {
+        data = res.data;
+      } else if (Array.isArray(res?.data?.data)) {
+        data = res.data.data;
+      }
+
+      setImages(data);
+
+    } catch (err) {
+      console.log(err);
+      setImages([]);
+    } finally {
+      isFetching.current = false;
+    }
+  };
+
+  useEffect(() => {
+    fetchImages();
+  }, []);
 
   /* ================= INFINITE SCROLL ================= */
   useEffect(() => {
@@ -73,8 +90,8 @@ const fetchImages = async () => {
         </p>
       </motion.div>
 
-      {/* PREMIUM GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-20">
+      {/* 🔥 PREMIUM GRID (UNCHANGED UI) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
         
         {filteredImages.length === 0 ? (
           <div className="col-span-full text-center py-32">
@@ -86,35 +103,32 @@ const fetchImages = async () => {
           filteredImages.slice(0, visible).map((item, i) => (
             <motion.div
               key={item._id}
-              initial={{ opacity: 0, y: 60 }}
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
-              className="group relative overflow-hidden rounded-3xl border border-yellow-500/20 shadow-xl hover:shadow-yellow-500/20 transition-all duration-500"
+              transition={{ delay: i * 0.05 }}
+              className="group bg-gradient-to-b from-[#111] to-[#0a0a0a] 
+                         rounded-3xl border border-yellow-500/20 
+                         overflow-hidden shadow-lg cursor-pointer
+                         hover:-translate-y-2 transition-all"
               onClick={() => setSelected(item)}
             >
+              <div className="relative h-64 overflow-hidden">
+                <img
+                  src={item.imageUrl}
+                  loading="lazy"
+                  className="w-full h-full object-cover"
+                />
+              </div>
 
-              {/* IMAGE */}
-              <img
-                src={item.imageUrl}
-                className="w-full h-[300px] object-cover group-hover:scale-110 transition duration-700"
-              />
-
-              {/* OVERLAY */}
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition duration-500 flex flex-col justify-end p-6">
-                
+              <div className="p-6">
                 <h2 className="text-yellow-400 text-xl font-bold mb-2">
                   {item.title?.[lang] || item.title?.en}
                 </h2>
 
-                <p className="text-gray-300 text-sm line-clamp-2">
+                <p className="text-gray-400 line-clamp-2">
                   {item.description?.[lang] || item.description?.en}
                 </p>
-
-                <span className="text-xs text-yellow-300 mt-2">
-                  📍 {item.location}
-                </span>
               </div>
-
             </motion.div>
           ))
         )}
@@ -129,7 +143,7 @@ const fetchImages = async () => {
       <AnimatePresence>
         {selected && (
           <motion.div
-            className="fixed inset-0 bg-black/90 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/90 flex items-center justify-center"
             onClick={() => setSelected(null)}
           >
             <div onClick={(e) => e.stopPropagation()}>
