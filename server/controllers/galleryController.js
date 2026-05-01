@@ -1,6 +1,14 @@
 import Gallery from "../models/Gallery.js";
 import cloudinary from "../config/cloudinary.js";
 
+/* 🔥 SIMPLE MEMORY CACHE (ANTI-SPAM) */
+let cache = {
+  data: null,
+  time: 0,
+};
+
+const CACHE_TIME = 30 * 1000; // 30 sec
+
 /* ================= UPLOAD ================= */
 export const uploadImage = async (req, res) => {
   try {
@@ -20,7 +28,7 @@ export const uploadImage = async (req, res) => {
       });
     }
 
-    // 🔹 Cloudinary upload
+    /* 🔹 Cloudinary upload */
     const result = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         { folder: "alabraz" },
@@ -42,10 +50,13 @@ export const uploadImage = async (req, res) => {
         ar: desc_ar || "",
       },
       category,
-      location: location || "Kuwait",   // ✅ FIX
+      location: location || "Kuwait",
       imageUrl: result.secure_url,
       public_id: result.public_id,
     });
+
+    /* 🔥 CLEAR CACHE AFTER CHANGE */
+    cache.data = null;
 
     res.status(201).json({
       success: true,
@@ -53,7 +64,7 @@ export const uploadImage = async (req, res) => {
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("UPLOAD ERROR:", err);
     res.status(500).json({
       success: false,
       msg: "Upload failed",
@@ -64,11 +75,28 @@ export const uploadImage = async (req, res) => {
 /* ================= GET ================= */
 export const getImages = async (req, res) => {
   try {
+    const now = Date.now();
+
+    /* 🔥 CACHE HIT */
+    if (cache.data && now - cache.time < CACHE_TIME) {
+      return res.json({
+        success: true,
+        data: cache.data,
+        cached: true, // debug
+      });
+    }
+
     const { category } = req.query;
 
     const images = await Gallery.find(
       category ? { category } : {}
     ).sort({ createdAt: -1 });
+
+    /* 🔥 SAVE CACHE */
+    cache = {
+      data: images,
+      time: now,
+    };
 
     res.json({
       success: true,
@@ -76,6 +104,7 @@ export const getImages = async (req, res) => {
     });
 
   } catch (err) {
+    console.error("FETCH ERROR:", err);
     res.status(500).json({ msg: "Fetch error" });
   }
 };
@@ -92,14 +121,18 @@ export const deleteImage = async (req, res) => {
     await cloudinary.uploader.destroy(image.public_id);
     await image.deleteOne();
 
+    /* 🔥 CLEAR CACHE */
+    cache.data = null;
+
     res.json({ success: true, msg: "Deleted" });
 
   } catch (err) {
+    console.error("DELETE ERROR:", err);
     res.status(500).json({ msg: "Delete error" });
   }
 };
 
-/* ================= UPDATE (FULL POWER) ================= */
+/* ================= UPDATE ================= */
 export const updateImage = async (req, res) => {
   try {
     const image = await Gallery.findById(req.params.id);
@@ -108,7 +141,7 @@ export const updateImage = async (req, res) => {
       return res.status(404).json({ msg: "Not found" });
     }
 
-    // 🔥 TEXT UPDATE
+    /* 🔥 TEXT UPDATE */
     image.title.en = req.body.title_en || image.title.en;
     image.title.ar = req.body.title_ar || image.title.ar;
 
@@ -117,12 +150,10 @@ export const updateImage = async (req, res) => {
 
     image.location = req.body.location || image.location;
 
-    // 🔥 IMAGE REPLACE (ADVANCED)
+    /* 🔥 IMAGE REPLACE */
     if (req.file) {
-      // old delete
       await cloudinary.uploader.destroy(image.public_id);
 
-      // new upload
       const result = await new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           { folder: "alabraz" },
@@ -140,12 +171,16 @@ export const updateImage = async (req, res) => {
 
     await image.save();
 
+    /* 🔥 CLEAR CACHE */
+    cache.data = null;
+
     res.json({
       success: true,
       data: image,
     });
 
   } catch (err) {
+    console.error("UPDATE ERROR:", err);
     res.status(500).json({ msg: err.message });
   }
 };
