@@ -12,6 +12,9 @@ import galleryRoutes from "./routes/galleryRoutes.js";
 
 const app = express();
 
+/* 🔥 FIX: TRUST PROXY (RENDER REQUIRED) */
+app.set("trust proxy", 1);
+
 /* 🔥 CORS (NO app.options — IMPORTANT) */
 app.use(cors({
   origin: "*",
