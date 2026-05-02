@@ -53,45 +53,35 @@ const UploadImage = () => {
   };
 
   /* ================= UPLOAD ================= */
-  const handleUpload = async () => {
-    if (files.length === 0) return alert("Select images");
+const handleUpload = async () => {
+  if (files.length === 0) return alert("Select images");
 
-    const formData = new FormData();
+  const formData = new FormData();
 
-    files.forEach((file) => {
-      formData.append("images", file); // 🔥 MULTI IMAGE
-    });
+  files.forEach((file) => {
+    formData.append("images", file);
+  });
 
-    formData.append("title_en", titleEn);
-    formData.append("title_ar", titleAr);
-    formData.append("desc_en", descEn);
-    formData.append("desc_ar", descAr);
-    formData.append("location", location);
-    formData.append("category", category);
+  // 🔥 YE LINE ADD KARO (IMPORTANT)
+  console.log([...formData.entries()]);
 
-    try {
-      setLoading(true);
+  formData.append("title_en", titleEn);
+  formData.append("title_ar", titleAr);
+  formData.append("desc_en", descEn);
+  formData.append("desc_ar", descAr);
+  formData.append("location", location);
+  formData.append("category", category);
 
-      await uploadImage(formData);
-
-      alert("Upload Success 🚀");
-
-      // RESET
-      setFiles([]);
-      setPreviews([]);
-      setTitleEn("");
-      setTitleAr("");
-      setDescEn("");
-      setDescAr("");
-      setLocation("");
-
-    } catch (err) {
-      alert(err.response?.data?.msg || "Upload failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  try {
+    setLoading(true);
+    await uploadImage(formData);
+    alert("Upload Success 🚀");
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
