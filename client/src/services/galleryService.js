@@ -1,6 +1,6 @@
 import API from "./api";
 
-/* 🔥 NORMALIZER (ADMIN + USER SAME DATA) */
+/* 🔥 NORMALIZER (SAFE FOR ALL RESPONSES) */
 const normalize = (res) => {
   if (Array.isArray(res)) return res;
   if (Array.isArray(res?.data)) return res.data;
@@ -12,29 +12,40 @@ const normalize = (res) => {
 export const getImages = async () => {
   try {
     const res = await API.get("/gallery");
-    return normalize(res.data); // 🔥 ALWAYS ARRAY
+
+    const data = normalize(res.data);
+
+    // 🔥 ensure gallery array always exists
+    return data.map(item => ({
+      ...item,
+      gallery: item.gallery || [],
+      coverImage: item.coverImage || item.gallery?.[0]?.url || ""
+    }));
+
   } catch (err) {
     console.error("GET ERROR:", err);
     return [];
   }
 };
 
-/* ================= UPLOAD ================= */
-export const uploadImage = async (data) => {
+/* ================= UPLOAD (MULTI IMAGE) ================= */
+export const uploadImage = async (formData) => {
   try {
-    const res = await API.post("/gallery/upload", data, {
+    const res = await API.post("/gallery/upload", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
+
     return res.data;
+
   } catch (err) {
     console.error("UPLOAD ERROR:", err);
     throw err;
   }
 };
 
-/* ================= DELETE ================= */
+/* ================= DELETE PROJECT ================= */
 export const deleteImage = async (id) => {
   try {
     const res = await API.delete(`/gallery/${id}`);
@@ -45,11 +56,30 @@ export const deleteImage = async (id) => {
   }
 };
 
-/* ================= UPDATE ================= */
-export const updateImage = async (id, data) => {
+/* ================= DELETE SINGLE IMAGE ================= */
+export const deleteSingleImage = async (projectId, imageId) => {
   try {
-    const res = await API.put(`/gallery/${id}`, data);
+    const res = await API.delete(
+      `/gallery/${projectId}/image/${imageId}`
+    );
     return res.data;
+  } catch (err) {
+    console.error("DELETE SINGLE ERROR:", err);
+    throw err;
+  }
+};
+
+/* ================= UPDATE (ADD IMAGES + TEXT) ================= */
+export const updateImage = async (id, formData) => {
+  try {
+    const res = await API.put(`/gallery/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return res.data;
+
   } catch (err) {
     console.error("UPDATE ERROR:", err);
     throw err;

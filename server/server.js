@@ -12,17 +12,17 @@ import galleryRoutes from "./routes/galleryRoutes.js";
 
 const app = express();
 
-/* 🔥 FIX: TRUST PROXY (RENDER REQUIRED) */
+/* 🔥 TRUST PROXY (RENDER / VERCEL SAFE) */
 app.set("trust proxy", 1);
 
-/* 🔥 CORS (NO app.options — IMPORTANT) */
+/* 🔥 CORS */
 app.use(cors({
   origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
-/* 🔥 ALWAYS SEND HEADERS (FOR 429 + ERRORS) */
+/* 🔥 FORCE HEADERS (ERROR CASE SAFE) */
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -33,7 +33,7 @@ app.use((req, res, next) => {
 /* 🔐 SECURITY */
 app.use(helmet());
 
-/* 🔥 RATE LIMIT (RELAXED) */
+/* 🔥 GLOBAL RATE LIMIT */
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 500,
@@ -41,8 +41,8 @@ app.use(rateLimit({
   legacyHeaders: false,
 }));
 
-/* 🔐 BODY */
-app.use(express.json());
+/* 🔐 BODY PARSER */
+app.use(express.json({ limit: "10mb" }));
 
 /* 🔗 ROUTES */
 app.use("/api/auth", authRoutes);
@@ -58,22 +58,25 @@ app.use((req, res) => {
   res.status(404).json({ msg: "Route not found" });
 });
 
-/* 🔐 ERROR HANDLER */
+/* 🔐 ERROR HANDLER (IMPROVED) */
 app.use((err, req, res, next) => {
-  console.error("SERVER ERROR:", err.message);
+  console.error("SERVER ERROR:", err);
 
-  res.status(500).json({
+  res.status(err.status || 500).json({
+    success: false,
     msg: err.message || "Server error",
   });
 });
 
 /* 🔌 DB CONNECT */
+const PORT = process.env.PORT || 5000;
+
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ DB Connected");
 
-    app.listen(process.env.PORT || 5000, () => {
-      console.log("🚀 Server running");
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
     });
   })
   .catch((err) => {

@@ -9,15 +9,47 @@ let cache = {
 
 const CACHE_TIME = 30 * 1000; // 30 sec
 
-/* ================= UPLOAD ================= */
+/* 🔧 CLOUDINARY HELPER */
+const uploadToCloudinary = (fileBuffer) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "alabraz" },
+      (error, result) => {
+        if (error) reject(error);
+        else {
+          // 🔥 OPTIMIZED IMAGE URL
+          const optimizedUrl = result.secure_url.replace(
+            "/upload/",
+            "/upload/q_auto,f_auto/"
+          );
+
+          resolve({
+            url: optimizedUrl,
+            public_id: result.public_id,
+          });
+        }
+      }
+    );
+    stream.end(fileBuffer);
+  });
+};
+
+/* ================= UPLOAD (MULTI IMAGE) ================= */
 export const uploadImage = async (req, res) => {
   try {
     const { title_en, title_ar, desc_en, desc_ar, category, location } = req.body;
 
-    if (!req.file) {
+    if (!req.files || req.files.length === 0) {
       return res.status(400).json({
         success: false,
-        msg: "Image file is required",
+        msg: "At least 1 image is required",
+      });
+    }
+
+    if (req.files.length > 8) {
+      return res.status(400).json({
+        success: false,
+        msg: "Max 8 images allowed",
       });
     }
 
@@ -28,19 +60,15 @@ export const uploadImage = async (req, res) => {
       });
     }
 
-    /* 🔹 Cloudinary upload */
-    const result = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: "alabraz" },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
-      stream.end(req.file.buffer);
-    });
+    /* 🔹 Upload all images */
+    const gallery = [];
 
-    const newImage = await Gallery.create({
+    for (const file of req.files) {
+      const uploaded = await uploadToCloudinary(file.buffer);
+      gallery.push(uploaded);
+    }
+
+    const newProject = await Gallery.create({
       title: {
         en: title_en || "",
         ar: title_ar || "",
@@ -51,8 +79,9 @@ export const uploadImage = async (req, res) => {
       },
       category,
       location: location || "Kuwait",
-      imageUrl: result.secure_url,
-      public_id: result.public_id,
+
+      // 🔥 NEW FIELD
+      gallery,
     });
 
     /* 🔥 CLEAR CACHE AFTER CHANGE */
@@ -60,7 +89,7 @@ export const uploadImage = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      data: newImage,
+      data: newProject,
     });
 
   } catch (err) {
@@ -82,7 +111,7 @@ export const getImages = async (req, res) => {
       return res.json({
         success: true,
         data: cache.data,
-        cached: true, // debug
+        cached: true,
       });
     }
 
@@ -109,17 +138,21 @@ export const getImages = async (req, res) => {
   }
 };
 
-/* ================= DELETE ================= */
+/* ================= DELETE PROJECT ================= */
 export const deleteImage = async (req, res) => {
   try {
-    const image = await Gallery.findById(req.params.id);
+    const project = await Gallery.findById(req.params.id);
 
-    if (!image) {
+    if (!project) {
       return res.status(404).json({ msg: "Not found" });
     }
 
-    await cloudinary.uploader.destroy(image.public_id);
-    await image.deleteOne();
+    /* 🔥 DELETE ALL IMAGES FROM CLOUDINARY */
+    for (const img of project.gallery) {
+      await cloudinary.uploader.destroy(img.public_id);
+    }
+
+    await project.deleteOne();
 
     /* 🔥 CLEAR CACHE */
     cache.data = null;
@@ -135,52 +168,82 @@ export const deleteImage = async (req, res) => {
 /* ================= UPDATE ================= */
 export const updateImage = async (req, res) => {
   try {
-    const image = await Gallery.findById(req.params.id);
+    const project = await Gallery.findById(req.params.id);
 
-    if (!image) {
+    if (!project) {
       return res.status(404).json({ msg: "Not found" });
     }
 
     /* 🔥 TEXT UPDATE */
-    image.title.en = req.body.title_en || image.title.en;
-    image.title.ar = req.body.title_ar || image.title.ar;
+    project.title.en = req.body.title_en || project.title.en;
+    project.title.ar = req.body.title_ar || project.title.ar;
 
-    image.description.en = req.body.desc_en || image.description.en;
-    image.description.ar = req.body.desc_ar || image.description.ar;
+    project.description.en = req.body.desc_en || project.description.en;
+    project.description.ar = req.body.desc_ar || project.description.ar;
 
-    image.location = req.body.location || image.location;
+    project.location = req.body.location || project.location;
 
-    /* 🔥 IMAGE REPLACE */
-    if (req.file) {
-      await cloudinary.uploader.destroy(image.public_id);
+    /* 🔥 ADD NEW IMAGES (NOT REPLACE) */
+    if (req.files && req.files.length > 0) {
+      if (project.gallery.length + req.files.length > 8) {
+        return res.status(400).json({ msg: "Max 8 images allowed" });
+      }
 
-      const result = await new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: "alabraz" },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        );
-        stream.end(req.file.buffer);
-      });
-
-      image.imageUrl = result.secure_url;
-      image.public_id = result.public_id;
+      for (const file of req.files) {
+        const uploaded = await uploadToCloudinary(file.buffer);
+        project.gallery.push(uploaded);
+      }
     }
 
-    await image.save();
+    await project.save();
 
     /* 🔥 CLEAR CACHE */
     cache.data = null;
 
     res.json({
       success: true,
-      data: image,
+      data: project,
     });
 
   } catch (err) {
     console.error("UPDATE ERROR:", err);
     res.status(500).json({ msg: err.message });
+  }
+};
+
+/* ================= DELETE SINGLE IMAGE ================= */
+export const deleteSingleImage = async (req, res) => {
+  try {
+    const { projectId, imageId } = req.params;
+
+    const project = await Gallery.findById(projectId);
+
+    if (!project) {
+      return res.status(404).json({ msg: "Project not found" });
+    }
+
+    const image = project.gallery.id(imageId);
+
+    if (!image) {
+      return res.status(404).json({ msg: "Image not found" });
+    }
+
+    await cloudinary.uploader.destroy(image.public_id);
+
+    project.gallery.pull(imageId);
+
+    await project.save();
+
+    /* 🔥 CLEAR CACHE */
+    cache.data = null;
+
+    res.json({
+      success: true,
+      msg: "Image deleted",
+    });
+
+  } catch (err) {
+    console.error("DELETE SINGLE ERROR:", err);
+    res.status(500).json({ msg: "Delete image failed" });
   }
 };

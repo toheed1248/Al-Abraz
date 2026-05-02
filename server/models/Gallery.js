@@ -1,58 +1,77 @@
 import mongoose from "mongoose";
 
-const gallerySchema = new mongoose.Schema(
+/* 🔹 Single Image Schema */
+const imageSchema = new mongoose.Schema(
   {
-    title: {
-      en: {
-        type: String,
-        trim: true,
-        default: "",
-      },
-      ar: {
-        type: String,
-        trim: true,
-        default: "",
-      },
-    },
-
-    description: {
-      en: {
-        type: String,
-        trim: true,
-        default: "",
-      },
-      ar: {
-        type: String,
-        trim: true,
-        default: "",
-      },
-    },
-
-    category: {
-      type: String,
-      required: true,
-      enum: ["masna", "contractor"], // 🔥 restrict values
-    },
-
-    imageUrl: {
+    url: {
       type: String,
       required: true,
     },
-
     public_id: {
       type: String,
       required: true,
     },
-    location: {
-  type: String,
-  default: "Kuwait"
-},
   },
-  { timestamps: true }
+  { _id: true } // needed for deleting single image
 );
 
-// 🔥 Index for faster queries
-gallerySchema.index({ category: 1 });
-gallerySchema.index({ createdAt: -1 });
+/* 🔹 Main Gallery Schema */
+const gallerySchema = new mongoose.Schema(
+  {
+    /* 🔤 TITLE (EN + AR) */
+    title: {
+      en: { type: String, default: "" },
+      ar: { type: String, default: "" },
+    },
+
+    /* 📝 DESCRIPTION */
+    description: {
+      en: { type: String, default: "" },
+      ar: { type: String, default: "" },
+    },
+
+    /* 📂 CATEGORY */
+    category: {
+      type: String,
+      enum: ["masna", "contractor"],
+      required: true,
+    },
+
+    /* 📍 LOCATION */
+    location: {
+      type: String,
+      default: "Kuwait",
+    },
+
+    /* 🖼️ MAIN GALLERY (MAX 8 IMAGES) */
+    gallery: {
+      type: [imageSchema],
+
+      validate: {
+        validator: function (val) {
+          return val.length > 0 && val.length <= 8;
+        },
+        message: "Gallery must contain 1 to 8 images",
+      },
+    },
+
+    /* ⭐ OPTIONAL: FEATURED IMAGE (first image fallback) */
+    coverImage: {
+      type: String,
+      default: "",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+/* 🔥 AUTO SET COVER IMAGE */
+gallerySchema.pre("save", function (next) {
+  if (this.gallery && this.gallery.length > 0) {
+    this.coverImage = this.gallery[0].url;
+  }
+  next();
+});
 
 export default mongoose.model("Gallery", gallerySchema);

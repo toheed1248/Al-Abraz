@@ -5,10 +5,15 @@ import {
   uploadImage,
   getImages,
   deleteImage,
-  updateImage
+  updateImage,
+  deleteSingleImage
 } from "../controllers/galleryController.js";
 
-import upload from "../middleware/uploadMiddleware.js";
+import {
+  uploadMultiple,
+  multerErrorHandler
+} from "../middleware/uploadMiddleware.js";
+
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -17,16 +22,16 @@ const router = express.Router();
 
 /* 🔹 GET (HIGH LIMIT - PUBLIC) */
 const getLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 min
-  max: 300, // 🔥 high (gallery load safe)
+  windowMs: 60 * 1000,
+  max: 300,
   standardHeaders: true,
   legacyHeaders: false,
 });
 
 /* 🔹 WRITE (LOW LIMIT - PROTECTED) */
 const writeLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 min
-  max: 40, // 🔥 control spam (upload/delete/update)
+  windowMs: 60 * 1000,
+  max: 40,
   standardHeaders: true,
   legacyHeaders: false,
   message: { msg: "Too many actions, slow down" },
@@ -37,16 +42,27 @@ const writeLimiter = rateLimit({
 /* 🔹 GET (PUBLIC + SAFE) */
 router.get("/", getLimiter, getImages);
 
-/* 🔹 UPLOAD (PROTECTED) */
+/* 🔹 UPLOAD PROJECT (MULTI IMAGE) */
 router.post(
   "/upload",
   protect,
   writeLimiter,
-  upload.single("image"),
+  uploadMultiple,          // 🔥 changed
+  multerErrorHandler,      // 🔥 added
   uploadImage
 );
 
-/* 🔹 DELETE (PROTECTED) */
+/* 🔹 UPDATE PROJECT (ADD IMAGES + TEXT) */
+router.put(
+  "/:id",
+  protect,
+  writeLimiter,
+  uploadMultiple,          // 🔥 changed
+  multerErrorHandler,      // 🔥 added
+  updateImage
+);
+
+/* 🔹 DELETE PROJECT */
 router.delete(
   "/:id",
   protect,
@@ -54,12 +70,12 @@ router.delete(
   deleteImage
 );
 
-/* 🔹 UPDATE (PROTECTED) */
-router.put(
-  "/:id",
+/* 🔥 DELETE SINGLE IMAGE (NEW FEATURE) */
+router.delete(
+  "/:projectId/image/:imageId",
   protect,
   writeLimiter,
-  updateImage
+  deleteSingleImage
 );
 
 export default router;

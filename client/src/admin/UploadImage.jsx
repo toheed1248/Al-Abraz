@@ -1,63 +1,89 @@
 import { useState } from "react";
 import { uploadImage } from "../services/galleryService";
-import { FaUpload, FaImage } from "react-icons/fa";
+import { FaUpload, FaImage, FaTrash } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const UploadImage = () => {
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [previews, setPreviews] = useState([]);
 
   const [titleEn, setTitleEn] = useState("");
   const [titleAr, setTitleAr] = useState("");
 
-  const [descEn, setDescEn] = useState("");   // ✅ NEW
-  const [descAr, setDescAr] = useState("");   // ✅ NEW
+  const [descEn, setDescEn] = useState("");
+  const [descAr, setDescAr] = useState("");
 
-  const [location, setLocation] = useState(""); // ✅ NEW
-
+  const [location, setLocation] = useState("");
   const [category, setCategory] = useState("masna");
+
   const [loading, setLoading] = useState(false);
 
-  const handleFile = (e) => {
-    const img = e.target.files[0];
-    setFile(img);
-    setPreview(URL.createObjectURL(img));
+  /* ================= FILE SELECT ================= */
+  const handleFiles = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+
+    if (selectedFiles.length + files.length > 8) {
+      return alert("Max 8 images allowed");
+    }
+
+    const newFiles = [...files, ...selectedFiles];
+    setFiles(newFiles);
+
+    const newPreviews = newFiles.map((file) =>
+      URL.createObjectURL(file)
+    );
+    setPreviews(newPreviews);
   };
 
+  /* ================= REMOVE IMAGE ================= */
+  const removeImage = (index) => {
+    const updatedFiles = files.filter((_, i) => i !== index);
+    setFiles(updatedFiles);
+
+    const updatedPreviews = updatedFiles.map((file) =>
+      URL.createObjectURL(file)
+    );
+    setPreviews(updatedPreviews);
+  };
+
+  /* ================= ARABIC SUGGEST ================= */
   const suggestArabic = () => {
     if (!titleEn) return;
     setTitleAr("🔤 " + titleEn + " (Arabic)");
   };
 
+  /* ================= UPLOAD ================= */
   const handleUpload = async () => {
-    if (!file) return alert("Select image");
+    if (files.length === 0) return alert("Select images");
 
     const formData = new FormData();
-    formData.append("image", file);
+
+    files.forEach((file) => {
+      formData.append("images", file); // 🔥 MULTI IMAGE
+    });
+
     formData.append("title_en", titleEn);
     formData.append("title_ar", titleAr);
-
-    formData.append("desc_en", descEn);   // ✅ ADD
-    formData.append("desc_ar", descAr);   // ✅ ADD
-
-    formData.append("location", location); // ✅ ADD
-
+    formData.append("desc_en", descEn);
+    formData.append("desc_ar", descAr);
+    formData.append("location", location);
     formData.append("category", category);
 
     try {
       setLoading(true);
+
       await uploadImage(formData);
 
       alert("Upload Success 🚀");
 
-      // reset
-      setFile(null);
-      setPreview(null);
+      // RESET
+      setFiles([]);
+      setPreviews([]);
       setTitleEn("");
       setTitleAr("");
-      setDescEn("");   // ✅ RESET
-      setDescAr("");   // ✅ RESET
-      setLocation(""); // ✅ RESET
+      setDescEn("");
+      setDescAr("");
+      setLocation("");
 
     } catch (err) {
       alert(err.response?.data?.msg || "Upload failed");
@@ -68,28 +94,54 @@ const UploadImage = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-lg mx-auto bg-white/10 backdrop-blur-lg p-6 rounded-2xl shadow-xl text-white"
+      className="max-w-3xl mx-auto bg-gradient-to-b from-[#111] to-[#0a0a0a]
+                 p-8 rounded-3xl shadow-2xl border border-yellow-500/20 text-white"
     >
-      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-        <FaUpload /> Upload Work
+      <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-yellow-400">
+        <FaUpload /> Upload Premium Project
       </h2>
 
-      {/* IMAGE PREVIEW */}
-      <div className="mb-4">
-        {preview ? (
-          <img src={preview} className="w-full h-48 object-cover rounded-xl" />
-        ) : (
-          <div className="h-48 bg-gray-800 flex items-center justify-center rounded-xl">
-            <FaImage size={30} />
+      {/* ================= IMAGE GRID ================= */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        {previews.map((src, i) => (
+          <div key={i} className="relative group">
+            <img
+              src={src}
+              className="w-full h-32 object-cover rounded-xl"
+            />
+
+            {/* DELETE */}
+            <button
+              onClick={() => removeImage(i)}
+              className="absolute top-2 right-2 bg-black/70 p-2 rounded-full
+                         opacity-0 group-hover:opacity-100 transition"
+            >
+              <FaTrash size={12} />
+            </button>
           </div>
+        ))}
+
+        {/* ADD BOX */}
+        {files.length < 8 && (
+          <label className="h-32 flex flex-col items-center justify-center
+                            border-2 border-dashed border-yellow-500/30
+                            rounded-xl cursor-pointer hover:bg-yellow-500/10">
+            <FaImage size={24} />
+            <span className="text-xs mt-1">Add Images</span>
+
+            <input
+              type="file"
+              multiple
+              onChange={handleFiles}
+              className="hidden"
+            />
+          </label>
         )}
       </div>
 
-      <input type="file" onChange={handleFile} className="mb-4 w-full text-sm" />
-
-      {/* TITLE EN */}
+      {/* ================= INPUTS ================= */}
       <input
         placeholder="Title (English)"
         value={titleEn}
@@ -97,8 +149,7 @@ const UploadImage = () => {
         className="input-premium"
       />
 
-      {/* ARABIC */}
-      <button onClick={suggestArabic} className="text-sm mb-2 text-yellow-400">
+      <button onClick={suggestArabic} className="text-sm text-yellow-400 mb-2">
         Suggest Arabic →
       </button>
 
@@ -109,7 +160,6 @@ const UploadImage = () => {
         className="input-premium"
       />
 
-      {/* 🔥 DESCRIPTION EN */}
       <textarea
         placeholder="Description (English)"
         value={descEn}
@@ -117,7 +167,6 @@ const UploadImage = () => {
         className="input-premium"
       />
 
-      {/* 🔥 DESCRIPTION AR */}
       <textarea
         placeholder="Description (Arabic)"
         value={descAr}
@@ -125,15 +174,13 @@ const UploadImage = () => {
         className="input-premium"
       />
 
-      {/* 🔥 LOCATION */}
       <input
-        placeholder="Location (e.g. Kuwait, Salmiya)"
+        placeholder="Location"
         value={location}
         onChange={(e) => setLocation(e.target.value)}
         className="input-premium"
       />
 
-      {/* CATEGORY */}
       <select
         value={category}
         onChange={(e) => setCategory(e.target.value)}
@@ -143,14 +190,22 @@ const UploadImage = () => {
         <option value="contractor">Contractor</option>
       </select>
 
-      {/* BUTTON */}
+      {/* ================= BUTTON ================= */}
       <button
         onClick={handleUpload}
-        className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 rounded-lg transition"
+        disabled={loading}
+        className="w-full bg-yellow-500 hover:bg-yellow-600 text-black
+                   font-semibold py-3 rounded-xl mt-4 transition-all"
       >
-        {loading ? "Uploading..." : "Upload Now"}
+        {loading ? "Uploading..." : "Upload Project"}
       </button>
 
+      {/* LOADING BAR */}
+      {loading && (
+        <div className="w-full bg-gray-800 h-1 mt-4 rounded-full overflow-hidden">
+          <div className="h-full bg-yellow-500 animate-pulse w-full"></div>
+        </div>
+      )}
     </motion.div>
   );
 };
