@@ -31,14 +31,8 @@ export const getImages = async () => {
 /* ================= UPLOAD (MULTI IMAGE) ================= */
 export const uploadImage = async (formData) => {
   try {
-    const res = await API.post("/gallery/upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
+    const res = await API.post("/gallery/upload", formData);
     return res.data;
-
   } catch (err) {
     console.error("UPLOAD ERROR:", err);
     throw err;
@@ -72,14 +66,8 @@ export const deleteSingleImage = async (projectId, imageId) => {
 /* ================= UPDATE (ADD IMAGES + TEXT) ================= */
 export const updateImage = async (id, formData) => {
   try {
-    const res = await API.put(`/gallery/${id}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
+    const res = await API.put(`/gallery/${id}`, formData);
     return res.data;
-
   } catch (err) {
     console.error("UPDATE ERROR:", err);
     throw err;
