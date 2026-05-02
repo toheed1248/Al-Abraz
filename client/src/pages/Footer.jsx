@@ -7,7 +7,7 @@ const Footer = () => {
   const { mode } = useMode();
   const { lang } = useLang();
 
-  const WHATSAPP = "96512345678";
+  const WHATSAPP = "+96555807419";
   const EMAIL = "youremail@gmail.com";
 
   const content = {

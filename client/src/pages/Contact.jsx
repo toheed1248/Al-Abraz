@@ -164,18 +164,24 @@ ${form.message}
             </motion.div>
 
             {/* 🔥 SMOOTH MAP */}
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.7, duration: 1 }}
-              className="rounded-3xl overflow-hidden shadow-2xl shadow-black/50 hover:shadow-yellow-500/20 transition-all duration-700"
-            >
-              <iframe
-                src="https://maps.google.com/maps?q=kuwait&t=&z=13&ie=UTF8&iwloc=&output=embed"
-                className="w-full h-48 lg:h-56 border-0 rounded-3xl"
-                loading="lazy"
-              />
-            </motion.div>
+           <motion.div 
+  initial={{ opacity: 0, scale: 0.8 }}
+  animate={{ opacity: 1, scale: 1 }}
+  transition={{ delay: 0.7, duration: 1 }}
+  className="rounded-3xl overflow-hidden shadow-2xl shadow-black/50 hover:shadow-yellow-500/20 transition-all duration-700"
+>
+  <iframe 
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d111336.64190663354!2d47.67764618712469!3d29.303752899344264!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3fcff319a2c36523%3A0x6ca775c5468211f8!2sAl%20-%20Abraj%2C%20Masna%20SAAD%20-%20Gypsum%2C%20G.R.C!5e0!3m2!1sen!2sin!4v1777753474462!5m2!1sen!2sin"
+    
+    width="100%" 
+    height="450"
+    
+    style={{ border: 0 }}  // ✅ FIX
+    allowFullScreen        // ✅ FIX
+    loading="lazy"
+    referrerPolicy="no-referrer-when-downgrade"  // ✅ FIX
+  />
+</motion.div>
 
             {/* 🔥 CONTACT INFO */}
             <motion.div 
