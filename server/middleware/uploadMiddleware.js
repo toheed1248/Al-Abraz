@@ -1,28 +1,73 @@
 import multer from "multer";
 
-// 🔹 Storage (memory for Cloudinary)
+/* ================= STORAGE ================= */
+
+/*
+🔥 MEMORY STORAGE
+Fast upload for Cloudinary
+Best for Render/Vercel
+*/
 const storage = multer.memoryStorage();
 
-// 🔹 File filter (only images allowed)
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+/* ================= ALLOWED FILE TYPES ================= */
 
-  if (allowedTypes.includes(file.mimetype)) {
+const allowedMimeTypes = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/jpg",
+];
+
+/* ================= FILE FILTER ================= */
+
+const fileFilter = (req, file, cb) => {
+  try {
+    /* 🔥 VALIDATE MIME TYPE */
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      return cb(
+        new Error(
+          "Only JPG, JPEG, PNG, WEBP images are allowed"
+        ),
+        false
+      );
+    }
+
+    /* 🔥 SAFE FILE NAME CHECK */
+    if (!file.originalname) {
+      return cb(
+        new Error("Invalid file name"),
+        false
+      );
+    }
+
     cb(null, true);
-  } else {
-    cb(new Error("Only JPG, PNG, WEBP images are allowed"), false);
+
+  } catch (err) {
+    cb(err, false);
   }
 };
 
-// 🔹 Multer config
+/* ================= MULTER CONFIG ================= */
+
 const upload = multer({
   storage,
 
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB max
-  },
-
   fileFilter,
+
+  limits: {
+    /*
+    🔥 MAX SINGLE FILE SIZE
+    10MB
+    */
+    fileSize: 10 * 1024 * 1024,
+
+    /*
+    🔥 MAX FILE COUNT
+    */
+    files: 15,
+  },
 });
+
+/* ================= EXPORT ================= */
 
 export default upload;

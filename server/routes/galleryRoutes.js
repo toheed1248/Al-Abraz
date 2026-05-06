@@ -5,61 +5,125 @@ import {
   uploadImage,
   getImages,
   deleteImage,
-  updateImage
+  updateImage,
 } from "../controllers/galleryController.js";
 
 import upload from "../middleware/uploadMiddleware.js";
+
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-/* ================= SMART RATE LIMIT ================= */
+/* =========================================================
+   🔥 PUBLIC GET LIMITER
+========================================================= */
 
-/* 🔹 GET (HIGH LIMIT - PUBLIC) */
 const getLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 min
-  max: 300, // 🔥 high (gallery load safe)
+  windowMs: 60 * 1000, // 1 minute
+
+  max: 300,
+
   standardHeaders: true,
+
   legacyHeaders: false,
+
+  message: {
+    success: false,
+    msg: "Too many requests, please slow down",
+  },
 });
 
-/* 🔹 WRITE (LOW LIMIT - PROTECTED) */
+/* =========================================================
+   🔥 WRITE LIMITER
+========================================================= */
+
 const writeLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 min
-  max: 40, // 🔥 control spam (upload/delete/update)
+  windowMs: 60 * 1000, // 1 minute
+
+  max: 40,
+
   standardHeaders: true,
+
   legacyHeaders: false,
-  message: { msg: "Too many actions, slow down" },
+
+  message: {
+    success: false,
+    msg: "Too many actions, slow down",
+  },
 });
 
-/* ================= ROUTES ================= */
+/* =========================================================
+   🔥 GET PROJECTS
+========================================================= */
 
-/* 🔹 GET (PUBLIC + SAFE) */
-router.get("/", getLimiter, getImages);
+/*
+PUBLIC ROUTE
+*/
+router.get(
+  "/",
+  getLimiter,
+  getImages
+);
 
-/* 🔹 UPLOAD (PROTECTED) */
+/* =========================================================
+   🔥 UPLOAD PROJECT
+========================================================= */
+
+/*
+PROTECTED ROUTE
+MULTIPLE IMAGE UPLOAD
+*/
 router.post(
   "/upload",
+
   protect,
+
   writeLimiter,
-  upload.single("image"),
+
+  upload.array("images", 15),
+
   uploadImage
 );
 
-/* 🔹 DELETE (PROTECTED) */
+/* =========================================================
+   🔥 UPDATE PROJECT
+========================================================= */
+
+/*
+PROTECTED ROUTE
+MULTIPLE IMAGE UPDATE
+*/
+router.put(
+  "/:id",
+
+  protect,
+
+  writeLimiter,
+
+  upload.array("images", 15),
+
+  updateImage
+);
+
+/* =========================================================
+   🔥 DELETE PROJECT
+========================================================= */
+
+/*
+PROTECTED ROUTE
+*/
 router.delete(
   "/:id",
+
   protect,
+
   writeLimiter,
+
   deleteImage
 );
 
-/* 🔹 UPDATE (PROTECTED) */
-router.put(
-  "/:id",
-  protect,
-  writeLimiter,
-  updateImage
-);
+/* =========================================================
+   🔥 EXPORT
+========================================================= */
 
 export default router;

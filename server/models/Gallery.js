@@ -1,58 +1,117 @@
 import mongoose from "mongoose";
 
-const gallerySchema = new mongoose.Schema(
+/* ================= IMAGE SCHEMA ================= */
+
+const imageSchema = new mongoose.Schema(
   {
-    title: {
-      en: {
-        type: String,
-        trim: true,
-        default: "",
-      },
-      ar: {
-        type: String,
-        trim: true,
-        default: "",
-      },
-    },
-
-    description: {
-      en: {
-        type: String,
-        trim: true,
-        default: "",
-      },
-      ar: {
-        type: String,
-        trim: true,
-        default: "",
-      },
-    },
-
-    category: {
-      type: String,
-      required: true,
-      enum: ["masna", "contractor"], // 🔥 restrict values
-    },
-
     imageUrl: {
       type: String,
-      required: true,
+      required: [true, "Image URL is required"],
+      trim: true,
     },
 
     public_id: {
       type: String,
-      required: true,
+      required: [true, "Cloudinary public_id required"],
+      trim: true,
     },
-    location: {
-  type: String,
-  default: "Kuwait"
-},
   },
-  { timestamps: true }
+  { _id: false }
 );
 
-// 🔥 Index for faster queries
+/* ================= MAIN GALLERY SCHEMA ================= */
+
+const gallerySchema = new mongoose.Schema(
+  {
+    /* 🔥 MULTI LANGUAGE TITLE */
+    title: {
+      en: {
+        type: String,
+        trim: true,
+        maxlength: 120,
+        default: "",
+      },
+
+      ar: {
+        type: String,
+        trim: true,
+        maxlength: 120,
+        default: "",
+      },
+    },
+
+    /* 🔥 MULTI LANGUAGE DESCRIPTION */
+    description: {
+      en: {
+        type: String,
+        trim: true,
+        maxlength: 2000,
+        default: "",
+      },
+
+      ar: {
+        type: String,
+        trim: true,
+        maxlength: 2000,
+        default: "",
+      },
+    },
+
+    /* 🔥 CATEGORY */
+    category: {
+      type: String,
+
+      required: [true, "Category is required"],
+
+      enum: {
+        values: ["masna", "contractor"],
+        message: "Invalid category",
+      },
+    },
+
+    /* 🔥 LOCATION */
+    location: {
+      type: String,
+      trim: true,
+      maxlength: 120,
+      default: "Kuwait",
+    },
+
+    /* 🔥 MULTIPLE IMAGES */
+    images: {
+      type: [imageSchema],
+
+      validate: {
+        validator: function (arr) {
+          return arr.length > 0;
+        },
+
+        message: "At least one image is required",
+      },
+
+      required: true,
+    },
+  },
+
+  {
+    timestamps: true,
+  }
+);
+
+/* ================= DATABASE INDEX ================= */
+
+/* 🔥 FAST CATEGORY SEARCH */
 gallerySchema.index({ category: 1 });
+
+/* 🔥 FAST NEWEST PROJECT FETCH */
 gallerySchema.index({ createdAt: -1 });
+
+/* 🔥 FAST COMBINED QUERY */
+gallerySchema.index({
+  category: 1,
+  createdAt: -1,
+});
+
+/* ================= EXPORT ================= */
 
 export default mongoose.model("Gallery", gallerySchema);
