@@ -1,9 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-
 import { getImages } from "../services/galleryService";
-
 import { useMode } from "../context/ModeContext";
-
 import { useLang } from "../context/LanguageContext";
 
 import {
@@ -19,6 +16,7 @@ import {
 import {
   Navigation,
   Pagination,
+  Autoplay,
 } from "swiper/modules";
 
 import "swiper/css";
@@ -26,9 +24,8 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 const Gallery = () => {
-  /* ================= STATES ================= */
-
-  const [images, setImages] = useState([]);
+  const [images, setImages] =
+    useState([]);
 
   const [selected, setSelected] =
     useState(null);
@@ -60,9 +57,6 @@ const Gallery = () => {
 
     } catch (err) {
       console.log(err);
-
-      setImages([]);
-
     } finally {
       setLoading(false);
     }
@@ -72,9 +66,29 @@ const Gallery = () => {
     fetchImages();
   }, []);
 
-  /* ================= INFINITE SCROLL ================= */
+  /* ================= LOCK BODY SCROLL ================= */
 
   useEffect(() => {
+
+    if (selected) {
+      document.body.style.overflow =
+        "hidden";
+    } else {
+      document.body.style.overflow =
+        "auto";
+    }
+
+    return () => {
+      document.body.style.overflow =
+        "auto";
+    };
+
+  }, [selected]);
+
+  /* ================= INFINITE ================= */
+
+  useEffect(() => {
+
     const observer =
       new IntersectionObserver(
         (entries) => {
@@ -85,9 +99,6 @@ const Gallery = () => {
               (prev) => prev + 6
             );
           }
-        },
-        {
-          threshold: 1,
         }
       );
 
@@ -95,7 +106,8 @@ const Gallery = () => {
       observer.observe(loader.current);
     }
 
-    return () => observer.disconnect();
+    return () =>
+      observer.disconnect();
 
   }, []);
 
@@ -127,7 +139,7 @@ const Gallery = () => {
 
     setScale((prev) =>
       e.deltaY < 0
-        ? Math.min(prev + 0.2, 3)
+        ? Math.min(prev + 0.2, 4)
         : Math.max(prev - 0.2, 1)
     );
   };
@@ -135,7 +147,7 @@ const Gallery = () => {
   return (
     <div className="
       bg-black text-white
-      py-20 px-4 md:px-20
+      py-20 px-4 md:px-16
     ">
 
       {/* ================= HEADER ================= */}
@@ -143,7 +155,7 @@ const Gallery = () => {
       <motion.div
         initial={{
           opacity: 0,
-          y: -40,
+          y: -30,
         }}
         animate={{
           opacity: 1,
@@ -156,7 +168,8 @@ const Gallery = () => {
 
         <h1 className="
           text-4xl md:text-6xl
-          font-bold text-yellow-400
+          font-bold
+          text-yellow-400
           mb-4
         ">
           {lang === "ar"
@@ -165,11 +178,9 @@ const Gallery = () => {
         </h1>
 
         <p className="
-          text-gray-400 text-lg
+          text-gray-400
         ">
-          {lang === "ar"
-            ? "استكشف أعمالنا الفاخرة"
-            : "Explore our premium work"}
+          Premium Work Showcase
         </p>
 
       </motion.div>
@@ -180,10 +191,8 @@ const Gallery = () => {
         grid grid-cols-1
         md:grid-cols-2
         lg:grid-cols-3
-        gap-8 mb-20
+        gap-8
       ">
-
-        {/* ================= SKELETON ================= */}
 
         {loading &&
           Array.from({ length: 6 }).map(
@@ -193,52 +202,12 @@ const Gallery = () => {
                 className="
                   animate-pulse
                   bg-[#111]
+                  h-[450px]
                   rounded-3xl
-                  overflow-hidden
-                  h-[400px]
                 "
-              >
-                <div className="
-                  h-64 bg-gray-800
-                " />
-
-                <div className="p-6">
-                  <div className="
-                    h-5 w-32 bg-gray-700
-                    rounded mb-4
-                  " />
-
-                  <div className="
-                    h-4 w-full bg-gray-800
-                    rounded mb-2
-                  " />
-
-                  <div className="
-                    h-4 w-2/3 bg-gray-800
-                    rounded
-                  " />
-                </div>
-              </div>
+              />
             )
           )}
-
-        {/* ================= NO DATA ================= */}
-
-        {!loading &&
-          filteredImages.length === 0 && (
-            <div className="
-              col-span-full
-              text-center py-32
-            ">
-              <p className="
-                text-gray-500 text-xl
-              ">
-                No projects uploaded 🚀
-              </p>
-            </div>
-          )}
-
-        {/* ================= CARDS ================= */}
 
         {!loading &&
           filteredImages
@@ -259,48 +228,62 @@ const Gallery = () => {
                 }}
 
                 transition={{
-                  delay: i * 0.05,
+                  delay:
+                    i * 0.05,
+                }}
+
+                whileHover={{
+                  y: -8,
                 }}
 
                 className="
                   group
+
                   bg-gradient-to-b
                   from-[#111]
                   to-[#0a0a0a]
 
-                  rounded-3xl
+                  border
+                  border-yellow-500/10
 
-                  border border-yellow-500/10
+                  rounded-3xl
 
                   overflow-hidden
 
-                  shadow-xl
-
-                  hover:-translate-y-2
-
-                  transition-all
-
-                  cursor-pointer
+                  shadow-2xl
                 "
               >
 
                 {/* ================= SLIDER ================= */}
 
                 <div className="
-                  relative h-72
+                  relative
+                  h-[320px]
+                  bg-black
                 ">
 
                   <Swiper
                     modules={[
                       Navigation,
                       Pagination,
+                      Autoplay,
                     ]}
 
-                    navigation
+                    autoplay={{
+                      delay: 3000,
+                    }}
 
                     pagination={{
                       clickable: true,
                     }}
+
+                    navigation={
+                      window.innerWidth > 768
+                    }
+
+                    touchRatio={1}
+
+                    grabCursor
 
                     className="
                       h-full
@@ -308,7 +291,11 @@ const Gallery = () => {
                   >
 
                     {item.images?.map(
-                      (img, index) => (
+                      (
+                        img,
+                        index
+                      ) => (
+
                         <SwiperSlide
                           key={index}
                         >
@@ -320,13 +307,20 @@ const Gallery = () => {
 
                             loading="lazy"
 
+                            decoding="async"
+
                             className="
-                              w-full h-full
-                              object-cover
+                              w-full
+                              h-full
 
-                              group-hover:scale-105
+                              object-contain
 
-                              transition duration-700
+                              bg-black
+
+                              transition
+                              duration-700
+
+                              group-hover:scale-[1.02]
                             "
 
                             onClick={() => {
@@ -344,7 +338,7 @@ const Gallery = () => {
 
                   </Swiper>
 
-                  {/* IMAGE COUNT */}
+                  {/* COUNT */}
 
                   <div className="
                     absolute top-4 right-4
@@ -354,48 +348,77 @@ const Gallery = () => {
                     backdrop-blur-lg
 
                     px-3 py-1
+
                     rounded-full
 
-                    text-xs text-white
+                    text-xs
                   ">
-                    {item.images?.length || 0}
-                    &nbsp;Photos
+                    {
+                      item.images
+                        ?.length
+                    } Photos
                   </div>
 
                 </div>
 
                 {/* ================= CONTENT ================= */}
 
-                <div className="p-6">
+                <div className="
+                  p-6
+                ">
 
                   <h2 className="
                     text-yellow-400
-                    text-xl font-bold
-                    mb-2
+                    text-xl
+                    font-bold
+                    mb-3
                   ">
-                    {item.title?.[lang] ||
+                    {item.title?.[
+                      lang
+                    ] ||
                       item.title?.en}
                   </h2>
 
                   <p className="
                     text-gray-400
                     line-clamp-2
-                    mb-3
+                    text-sm
                   ">
                     {item.description?.[
                       lang
                     ] ||
-                      item.description?.en}
+                      item.description
+                        ?.en}
                   </p>
 
-                  {item.location && (
-                    <p className="
-                      text-xs
+                  <div className="
+                    flex justify-between
+                    items-center mt-5
+                  ">
+
+                    <span className="
                       text-yellow-400/70
+                      text-xs
                     ">
-                      📍 {item.location}
-                    </p>
-                  )}
+                      📍{" "}
+                      {item.location}
+                    </span>
+
+                    <span className="
+                      bg-yellow-500/10
+                      text-yellow-400
+
+                      text-xs
+
+                      px-3 py-1
+                      rounded-full
+                    ">
+                      {
+                        item.category
+                      }
+                    </span>
+
+                  </div>
 
                 </div>
 
@@ -408,23 +431,10 @@ const Gallery = () => {
 
       <div
         ref={loader}
-        className="
-          h-20 flex
-          items-center justify-center
-        "
-      >
+        className="h-20"
+      />
 
-        {!loading && (
-          <div className="
-            text-gray-500
-          ">
-            Loading more...
-          </div>
-        )}
-
-      </div>
-
-      {/* ================= FULLSCREEN MODAL ================= */}
+      {/* ================= MODAL ================= */}
 
       <AnimatePresence>
 
@@ -446,34 +456,39 @@ const Gallery = () => {
             className="
               fixed inset-0
               bg-black/95
-              z-50
+              z-[999]
 
               flex items-center
               justify-center
+
+              touch-none
             "
           >
 
             {/* CLOSE */}
 
             <button
-              className="
-                absolute top-6 right-6
-                text-4xl text-white
-                z-50
-              "
-
               onClick={() =>
                 setSelected(null)
               }
+
+              className="
+                absolute top-5 right-5
+                z-50
+
+                text-white
+                text-5xl
+              "
             >
               ×
             </button>
 
-            {/* MODAL SLIDER */}
+            {/* SLIDER */}
 
             <div className="
-              w-full max-w-6xl
-              px-4
+              w-full h-full
+              flex items-center
+              justify-center
             ">
 
               <Swiper
@@ -482,23 +497,41 @@ const Gallery = () => {
                   Pagination,
                 ]}
 
-                navigation
+                navigation={
+                  window.innerWidth > 768
+                }
 
                 pagination={{
                   clickable: true,
                 }}
+
+                touchRatio={1.2}
+
+                grabCursor
+
+                className="
+                  w-full h-full
+                "
               >
 
                 {selected.images?.map(
-                  (img, i) => (
+                  (
+                    img,
+                    index
+                  ) => (
 
                     <SwiperSlide
-                      key={i}
+                      key={index}
                     >
 
                       <div className="
+                        w-full h-full
+
                         flex flex-col
                         items-center
+                        justify-center
+
+                        px-4 py-16
                       ">
 
                         <motion.img
@@ -510,51 +543,51 @@ const Gallery = () => {
                             handleZoom
                           }
 
+                          drag
+
+                          dragElastic={
+                            0.05
+                          }
+
                           style={{
                             scale,
                           }}
 
-                          drag
-
-                          dragConstraints={{
-                            left: -200,
-                            right: 200,
-                            top: -200,
-                            bottom: 200,
-                          }}
-
                           className="
-                            max-h-[80vh]
-                            rounded-3xl
+                            max-h-[75vh]
+                            max-w-full
 
                             object-contain
+
+                            rounded-3xl
 
                             shadow-2xl
                           "
                         />
 
-                        {/* DETAILS */}
-
                         <div className="
-                          text-center mt-6
-                          px-4
+                          mt-6
+                          text-center
+                          max-w-2xl
                         ">
 
                           <h2 className="
                             text-2xl
-                            text-yellow-400
                             font-bold
+                            text-yellow-400
                           ">
-                            {selected.title?.[
+                            {selected
+                              .title?.[
                               lang
                             ] ||
-                              selected.title
+                              selected
+                                .title
                                 ?.en}
                           </h2>
 
                           <p className="
                             text-gray-300
-                            mt-2
+                            mt-3
                           ">
                             {selected
                               .description?.[
@@ -564,18 +597,6 @@ const Gallery = () => {
                                 .description
                                 ?.en}
                           </p>
-
-                          {selected.location && (
-                            <p className="
-                              text-yellow-400/70
-                              text-sm mt-2
-                            ">
-                              📍{" "}
-                              {
-                                selected.location
-                              }
-                            </p>
-                          )}
 
                         </div>
 

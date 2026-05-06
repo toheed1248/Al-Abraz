@@ -212,14 +212,14 @@ const ManageGallery = () => {
         /*
         🔥 NEW IMAGES
         */
-        newFiles.forEach(
-          (file) => {
-            formData.append(
-              "images",
-              file
-            );
-          }
-        );
+       if (newFiles.length > 0) {
+        newFiles.forEach((file) => {
+             formData.append(
+      "images",
+      file
+    );
+  });
+}
 
         await updateImage(
           selected._id,
