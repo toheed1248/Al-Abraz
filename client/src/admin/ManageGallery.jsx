@@ -1,263 +1,918 @@
 import { useEffect, useState } from "react";
+
 import {
   getImages,
   deleteImage,
-  updateImage
+  updateImage,
 } from "../services/galleryService";
-import { motion } from "framer-motion";
-import { FaTrash, FaEdit } from "react-icons/fa";
+
+import {
+  motion,
+  AnimatePresence,
+} from "framer-motion";
+
+import {
+  FaTrash,
+  FaEdit,
+  FaImages,
+} from "react-icons/fa";
+
+import {
+  Swiper,
+  SwiperSlide,
+} from "swiper/react";
+
+import {
+  Navigation,
+  Pagination,
+} from "swiper/modules";
+
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 const ManageGallery = () => {
-  const [images, setImages] = useState([]);
-  const [selected, setSelected] = useState(null);
 
-  const [editData, setEditData] = useState({
-    title_en: "",
-    title_ar: "",
-    desc_en: "",
-    desc_ar: "",
-    location: ""
-  });
+  /* ================= STATES ================= */
+
+  const [images, setImages] =
+    useState([]);
+
+  const [selected, setSelected] =
+    useState(null);
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [newFiles, setNewFiles] =
+    useState([]);
+
+  const [previewFiles, setPreviewFiles] =
+    useState([]);
+
+  const [editData, setEditData] =
+    useState({
+      title_en: "",
+      title_ar: "",
+      desc_en: "",
+      desc_ar: "",
+      location: "",
+      category: "masna",
+    });
+
+  /* ================= FETCH ================= */
+
+  const fetchImages = async () => {
+    try {
+      const data =
+        await getImages();
+
+      setImages(data || []);
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   useEffect(() => {
     fetchImages();
   }, []);
 
-  const fetchImages = async () => {
-  try {
-    const data = await getImages(); // ✅ same logic
-    setImages(data);
-  } catch (err) {
-    console.log(err);
-  }
-};
+  /* ================= DELETE ================= */
 
-  /* DELETE */
-  const handleDelete = async (id) => {
-    if (!confirm("Delete this image?")) return;
+  const handleDelete = async (
+    id
+  ) => {
+
+    const confirmDelete =
+      window.confirm(
+        "Delete this project?"
+      );
+
+    if (!confirmDelete) return;
 
     try {
+
       await deleteImage(id);
-      setImages((prev) => prev.filter((item) => item._id !== id));
+
+      setImages((prev) =>
+        prev.filter(
+          (item) =>
+            item._id !== id
+        )
+      );
+
+      alert(
+        "Project deleted ✅"
+      );
+
     } catch (err) {
+      console.log(err);
+
       alert("Delete failed");
     }
   };
 
-  /* OPEN EDIT */
+  /* ================= OPEN EDIT ================= */
+
   const openEdit = (item) => {
+
     setSelected(item);
 
     setEditData({
-      title_en: item.title?.en || "",
-      title_ar: item.title?.ar || "",
-      desc_en: item.description?.en || "",
-      desc_ar: item.description?.ar || "",
-      location: item.location || ""
+      title_en:
+        item.title?.en || "",
+
+      title_ar:
+        item.title?.ar || "",
+
+      desc_en:
+        item.description?.en || "",
+
+      desc_ar:
+        item.description?.ar || "",
+
+      location:
+        item.location || "",
+
+      category:
+        item.category ||
+        "masna",
     });
+
+    setPreviewFiles([]);
+
+    setNewFiles([]);
   };
 
-  /* UPDATE */
-  const handleUpdate = async () => {
-    try {
-      await updateImage(selected._id, editData);
-      alert("Updated Successfully ✅");
-      setSelected(null);
-      fetchImages();
-    } catch (err) {
-      alert("Update failed");
-    }
+  /* ================= FILE CHANGE ================= */
+
+  const handleFiles = (e) => {
+
+    const files =
+      Array.from(
+        e.target.files
+      );
+
+    setNewFiles(files);
+
+    const previews = files.map(
+      (file) =>
+        URL.createObjectURL(file)
+    );
+
+    setPreviewFiles(previews);
   };
+
+  /* ================= UPDATE ================= */
+
+  const handleUpdate =
+    async () => {
+
+      try {
+
+        setLoading(true);
+
+        const formData =
+          new FormData();
+
+        /*
+        🔥 TEXT DATA
+        */
+        formData.append(
+          "title_en",
+          editData.title_en
+        );
+
+        formData.append(
+          "title_ar",
+          editData.title_ar
+        );
+
+        formData.append(
+          "desc_en",
+          editData.desc_en
+        );
+
+        formData.append(
+          "desc_ar",
+          editData.desc_ar
+        );
+
+        formData.append(
+          "location",
+          editData.location
+        );
+
+        formData.append(
+          "category",
+          editData.category
+        );
+
+        /*
+        🔥 NEW IMAGES
+        */
+        newFiles.forEach(
+          (file) => {
+            formData.append(
+              "images",
+              file
+            );
+          }
+        );
+
+        await updateImage(
+          selected._id,
+          formData
+        );
+
+        alert(
+          "Updated Successfully ✅"
+        );
+
+        setSelected(null);
+
+        fetchImages();
+
+      } catch (err) {
+
+        console.log(err);
+
+        alert(
+          "Update failed"
+        );
+
+      } finally {
+        setLoading(false);
+      }
+    };
 
   return (
-    <div className="bg-black text-white min-h-screen px-4 md:px-10 py-10">
+    <div className="
+      bg-black text-white
+      min-h-screen
+      px-4 md:px-10 py-10
+    ">
 
-      {/* HEADER */}
-      <div className="text-center mb-12">
-        <h1 className="text-3xl md:text-5xl font-bold gold-text">
+      {/* ================= HEADER ================= */}
+
+      <div className="
+        text-center mb-12
+      ">
+
+        <h1 className="
+          text-4xl md:text-5xl
+          font-bold
+          text-yellow-400
+        ">
           Manage Gallery
         </h1>
-        <p className="text-gray-400 text-sm mt-2">
-          Edit, update or delete your projects
+
+        <p className="
+          text-gray-400
+          mt-3
+        ">
+          Edit, update or delete projects
         </p>
+
       </div>
 
-      {/* GRID */}
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
+      {/* ================= GRID ================= */}
 
-        {images.map((img, i) => (
+      <div className="
+        grid sm:grid-cols-2
+        lg:grid-cols-3
+        gap-8
+      ">
+
+        {images.map(
+          (item, i) => (
+
+            <motion.div
+              key={item._id}
+
+              initial={{
+                opacity: 0,
+                y: 40,
+              }}
+
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+
+              transition={{
+                delay:
+                  i * 0.05,
+              }}
+
+              whileHover={{
+                y: -8,
+              }}
+
+              className="
+                group
+
+                bg-gradient-to-b
+                from-[#111]
+                to-[#0a0a0a]
+
+                rounded-3xl
+
+                overflow-hidden
+
+                border
+                border-yellow-500/10
+
+                shadow-xl
+              "
+            >
+
+              {/* ================= SLIDER ================= */}
+
+              <div className="
+                relative h-72
+              ">
+
+                <Swiper
+                  modules={[
+                    Navigation,
+                    Pagination,
+                  ]}
+
+                  navigation
+
+                  pagination={{
+                    clickable: true,
+                  }}
+
+                  className="
+                    h-full
+                  "
+                >
+
+                  {item.images?.map(
+                    (
+                      img,
+                      index
+                    ) => (
+
+                      <SwiperSlide
+                        key={index}
+                      >
+
+                        <img
+                          src={
+                            img.imageUrl
+                          }
+
+                          className="
+                            w-full h-full
+                            object-cover
+
+                            group-hover:scale-105
+
+                            transition duration-700
+                          "
+                        />
+
+                      </SwiperSlide>
+                    )
+                  )}
+
+                </Swiper>
+
+                {/* IMAGE COUNT */}
+
+                <div className="
+                  absolute top-4 right-4
+                  z-20
+
+                  bg-black/70
+
+                  px-3 py-1
+
+                  rounded-full
+
+                  text-xs
+                ">
+                  <FaImages className="
+                    inline mr-1
+                  " />
+
+                  {
+                    item.images
+                      ?.length
+                  }
+                </div>
+
+                {/* ACTIONS */}
+
+                <div className="
+                  absolute bottom-0 left-0
+                  w-full
+
+                  flex justify-between
+
+                  bg-black/60
+                  backdrop-blur-xl
+
+                  px-4 py-3
+
+                  z-20
+                ">
+
+                  <button
+                    onClick={() =>
+                      openEdit(
+                        item
+                      )
+                    }
+
+                    className="
+                      text-yellow-400
+                      flex items-center gap-2
+                    "
+                  >
+                    <FaEdit />
+                    Edit
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      handleDelete(
+                        item._id
+                      )
+                    }
+
+                    className="
+                      text-red-400
+                      flex items-center gap-2
+                    "
+                  >
+                    <FaTrash />
+                    Delete
+                  </button>
+
+                </div>
+
+              </div>
+
+              {/* ================= CONTENT ================= */}
+
+              <div className="
+                p-5
+              ">
+
+                <h2 className="
+                  text-yellow-400
+                  text-xl font-bold
+                  mb-2
+                ">
+                  {
+                    item.title?.en
+                  }
+                </h2>
+
+                <p className="
+                  text-gray-400
+                  line-clamp-2
+                ">
+                  {
+                    item.description
+                      ?.en
+                  }
+                </p>
+
+                <div className="
+                  flex justify-between
+                  items-center
+                  mt-4
+                ">
+
+                  <span className="
+                    text-xs
+                    text-yellow-400/70
+                  ">
+                    📍{" "}
+                    {
+                      item.location
+                    }
+                  </span>
+
+                  <span className="
+                    bg-yellow-500/10
+
+                    text-yellow-400
+
+                    text-xs
+
+                    px-3 py-1
+
+                    rounded-full
+                  ">
+                    {
+                      item.category
+                    }
+                  </span>
+
+                </div>
+
+              </div>
+
+            </motion.div>
+          )
+        )}
+
+      </div>
+
+      {/* ================= EDIT MODAL ================= */}
+
+      <AnimatePresence>
+
+        {selected && (
+
           <motion.div
-            key={img._id}
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
-            whileHover={{ y: -6 }}
+            initial={{
+              opacity: 0,
+            }}
+
+            animate={{
+              opacity: 1,
+            }}
+
+            exit={{
+              opacity: 0,
+            }}
+
             className="
-              group
-              bg-gradient-to-b from-[#111] to-[#0a0a0a]
-              rounded-3xl
-              border border-yellow-500/10
-              overflow-hidden
-              shadow-[0_0_30px_rgba(255,200,0,0.05)]
-              hover:shadow-[0_0_40px_rgba(255,200,0,0.15)]
-              transition
+              fixed inset-0
+              bg-black/90
+
+              flex items-center
+              justify-center
+
+              z-50
+
+              p-4
             "
           >
 
-            {/* IMAGE */}
-            <div className="relative h-[230px] overflow-hidden rounded-t-3xl">
+            <motion.div
+              initial={{
+                scale: 0.8,
+                opacity: 0,
+              }}
 
-              <img
-                src={img.imageUrl}
-                className="
-                  w-full h-full object-cover
-                  group-hover:scale-110
-                  transition duration-700 ease-out
-                "
-              />
+              animate={{
+                scale: 1,
+                opacity: 1,
+              }}
 
-              {/* ACTION BAR (FIXED FOR MOBILE + DESKTOP) */}
+              className="
+                bg-gradient-to-b
+                from-[#111]
+                to-[#0a0a0a]
+
+                border
+                border-yellow-500/10
+
+                rounded-3xl
+
+                p-6
+
+                w-full
+                max-w-2xl
+
+                max-h-[90vh]
+                overflow-y-auto
+              "
+            >
+
+              {/* TITLE */}
+
+              <h2 className="
+                text-2xl
+                text-yellow-400
+                font-bold
+                mb-6
+              ">
+                Edit Project
+              </h2>
+
+              {/* CURRENT IMAGES */}
+
               <div className="
-                absolute bottom-0 left-0 w-full
-                flex justify-between items-center
-                px-4 py-3
-                bg-black/60 backdrop-blur-xl
-                translate-y-0
-                md:translate-y-full md:group-hover:translate-y-0
-                transition
+                grid grid-cols-2
+                md:grid-cols-3
+                gap-4 mb-6
+              ">
+
+                {selected.images?.map(
+                  (
+                    img,
+                    index
+                  ) => (
+
+                    <img
+                      key={index}
+
+                      src={
+                        img.imageUrl
+                      }
+
+                      className="
+                        h-32 w-full
+                        object-cover
+                        rounded-2xl
+                      "
+                    />
+                  )
+                )}
+
+              </div>
+
+              {/* NEW IMAGES */}
+
+              <label className="
+                border-2 border-dashed
+                border-yellow-500/20
+
+                rounded-2xl
+
+                p-6
+
+                flex flex-col
+                items-center
+                justify-center
+
+                cursor-pointer
+
+                mb-6
+              ">
+
+                <p className="
+                  text-gray-400
+                ">
+                  Upload New Images
+                </p>
+
+                <input
+                  type="file"
+
+                  multiple
+
+                  className="hidden"
+
+                  onChange={
+                    handleFiles
+                  }
+                />
+
+              </label>
+
+              {/* PREVIEWS */}
+
+              {previewFiles.length >
+                0 && (
+
+                <div className="
+                  grid grid-cols-2
+                  md:grid-cols-4
+                  gap-4 mb-6
+                ">
+
+                  {previewFiles.map(
+                    (
+                      img,
+                      index
+                    ) => (
+
+                      <img
+                        key={index}
+
+                        src={img}
+
+                        className="
+                          h-28 w-full
+                          object-cover
+                          rounded-2xl
+                        "
+                      />
+                    )
+                  )}
+
+                </div>
+              )}
+
+              {/* FORM */}
+
+              <div className="
+                space-y-4
+              ">
+
+                <input
+                  value={
+                    editData.title_en
+                  }
+
+                  onChange={(e) =>
+                    setEditData({
+                      ...editData,
+
+                      title_en:
+                        e.target
+                          .value,
+                    })
+                  }
+
+                  placeholder="Title EN"
+
+                  className="
+                    input-premium
+                  "
+                />
+
+                <input
+                  value={
+                    editData.title_ar
+                  }
+
+                  onChange={(e) =>
+                    setEditData({
+                      ...editData,
+
+                      title_ar:
+                        e.target
+                          .value,
+                    })
+                  }
+
+                  placeholder="Title AR"
+
+                  className="
+                    input-premium
+                  "
+                />
+
+                <textarea
+                  value={
+                    editData.desc_en
+                  }
+
+                  onChange={(e) =>
+                    setEditData({
+                      ...editData,
+
+                      desc_en:
+                        e.target
+                          .value,
+                    })
+                  }
+
+                  placeholder="Description EN"
+
+                  className="
+                    input-premium
+                  "
+                />
+
+                <textarea
+                  value={
+                    editData.desc_ar
+                  }
+
+                  onChange={(e) =>
+                    setEditData({
+                      ...editData,
+
+                      desc_ar:
+                        e.target
+                          .value,
+                    })
+                  }
+
+                  placeholder="Description AR"
+
+                  className="
+                    input-premium
+                  "
+                />
+
+                <input
+                  value={
+                    editData.location
+                  }
+
+                  onChange={(e) =>
+                    setEditData({
+                      ...editData,
+
+                      location:
+                        e.target
+                          .value,
+                    })
+                  }
+
+                  placeholder="Location"
+
+                  className="
+                    input-premium
+                  "
+                />
+
+                <select
+                  value={
+                    editData.category
+                  }
+
+                  onChange={(e) =>
+                    setEditData({
+                      ...editData,
+
+                      category:
+                        e.target
+                          .value,
+                    })
+                  }
+
+                  className="
+                    input-premium
+                  "
+                >
+
+                  <option value="masna">
+                    Masna
+                  </option>
+
+                  <option value="contractor">
+                    Contractor
+                  </option>
+
+                </select>
+
+              </div>
+
+              {/* BUTTONS */}
+
+              <div className="
+                flex gap-4 mt-8
               ">
 
                 <button
-                  onClick={() => openEdit(img)}
+                  onClick={() =>
+                    setSelected(
+                      null
+                    )
+                  }
+
                   className="
-                    flex items-center gap-2 text-yellow-400 text-sm
-                    hover:scale-105 transition
+                    flex-1
+
+                    bg-gray-800
+
+                    py-3 rounded-2xl
                   "
                 >
-                  <FaEdit /> Edit
+                  Cancel
                 </button>
 
                 <button
-                  onClick={() => handleDelete(img._id)}
+                  onClick={
+                    handleUpdate
+                  }
+
+                  disabled={loading}
+
                   className="
-                    flex items-center gap-2 text-red-400 text-sm
-                    hover:scale-105 transition
+                    flex-1
+
+                    bg-yellow-500
+                    hover:bg-yellow-400
+
+                    text-black
+                    font-semibold
+
+                    py-3 rounded-2xl
+
+                    transition
                   "
                 >
-                  <FaTrash /> Delete
+
+                  {loading
+                    ? "Updating..."
+                    : "Save Changes"}
+
                 </button>
 
               </div>
-            </div>
 
-            {/* CONTENT */}
-            <div className="p-5">
-              <h2 className="text-yellow-400 font-semibold mb-1">
-                {img.title?.en}
-              </h2>
-
-              <p className="text-gray-400 text-sm line-clamp-2">
-                {img.description?.en}
-              </p>
-
-              <div className="flex justify-between items-center mt-3 text-xs text-gray-500">
-                <span>📍 {img.location || "Kuwait"}</span>
-
-                <span className="
-                  bg-gradient-to-r from-yellow-500/20 to-yellow-400/10
-                  text-yellow-400 px-3 py-1 rounded-full text-[10px]
-                ">
-                  {img.category}
-                </span>
-              </div>
-            </div>
+            </motion.div>
 
           </motion.div>
-        ))}
+        )}
 
-      </div>
-
-      {/* EDIT MODAL */}
-      {selected && (
-        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
-
-          <motion.div
-            initial={{ scale: 0.7, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="
-              bg-gradient-to-b from-[#111] to-[#0a0a0a]
-              border border-yellow-500/10
-              rounded-3xl
-              p-6
-              w-full max-w-md
-              shadow-[0_0_30px_rgba(255,200,0,0.1)]
-            "
-          >
-
-            <h2 className="text-yellow-400 text-lg mb-4 font-semibold">
-              Edit Project
-            </h2>
-
-            <input
-              placeholder="Title EN"
-              value={editData.title_en}
-              onChange={(e) =>
-                setEditData({ ...editData, title_en: e.target.value })
-              }
-              className="input-premium"
-            />
-
-            <input
-              placeholder="Title AR"
-              value={editData.title_ar}
-              onChange={(e) =>
-                setEditData({ ...editData, title_ar: e.target.value })
-              }
-              className="input-premium"
-            />
-
-            <textarea
-              placeholder="Description EN"
-              value={editData.desc_en}
-              onChange={(e) =>
-                setEditData({ ...editData, desc_en: e.target.value })
-              }
-              className="input-premium"
-            />
-
-            <textarea
-              placeholder="Description AR"
-              value={editData.desc_ar}
-              onChange={(e) =>
-                setEditData({ ...editData, desc_ar: e.target.value })
-              }
-              className="input-premium"
-            />
-
-            <input
-              placeholder="Location"
-              value={editData.location}
-              onChange={(e) =>
-                setEditData({ ...editData, location: e.target.value })
-              }
-              className="input-premium"
-            />
-
-            <button
-              onClick={handleUpdate}
-              className="
-                w-full mt-3
-                bg-yellow-500 hover:bg-yellow-400
-                text-black py-3 rounded-full font-semibold
-                transition
-              "
-            >
-              Save Changes
-            </button>
-
-          </motion.div>
-        </div>
-      )}
+      </AnimatePresence>
 
     </div>
   );
