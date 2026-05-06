@@ -158,3 +158,23 @@ footer img {
 footer img:hover {
   transform: scale(1.05);
 }
+
+.contact-input{
+  width:100%;
+  background:#111;
+  border:1px solid rgba(255,215,0,0.08);
+  padding:18px 20px;
+  border-radius:20px;
+  color:white;
+  outline:none;
+  transition:0.3s;
+}
+
+.contact-input:focus{
+  border-color:#eab308;
+  box-shadow:0 0 0 4px rgba(234,179,8,0.08);
+}
+
+.contact-input::placeholder{
+  color:#888;
+}

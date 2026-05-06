@@ -1,235 +1,701 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useLang } from "../context/LanguageContext";
-import { useMode } from "../context/ModeContext";
-import { FaChevronDown, FaWhatsapp } from "react-icons/fa";
+
+import {
+  motion,
+  AnimatePresence,
+} from "framer-motion";
+
+import {
+  useLang,
+} from "../context/LanguageContext";
+
+import {
+  useMode,
+} from "../context/ModeContext";
+
+import {
+  FaChevronDown,
+  FaWhatsapp,
+  FaGem,
+} from "react-icons/fa";
 
 const FAQ = () => {
-  const { lang } = useLang();
-  const { mode } = useMode();
 
-  const [openIndex, setOpenIndex] = useState(null);
-  const [showAll, setShowAll] = useState(false);
+  const { lang } =
+    useLang();
 
-  /* 🔥 MODE BASED NUMBERS */
+  const { mode } =
+    useMode();
+
+  const [openIndex, setOpenIndex] =
+    useState(null);
+
+  const [visibleCount, setVisibleCount] =
+    useState(8);
+
+  /* ================= NUMBERS ================= */
+
   const numbers = {
-    masna: "96599575150",
-    contractor: "96555807419"
+
+    masna:
+      "96599575150",
+
+    contractor:
+      "96555807419",
+
   };
 
-  const WHATSAPP = numbers[mode];
+  const WHATSAPP =
+    numbers[mode];
 
-  /* 🔥 FAQ DATA (SMART + SERVICES BASED) */
-  const faqData = [
-    {
-      q: {
-        en: "Do you provide custom designs?",
-        ar: "هل تقدمون تصاميم مخصصة؟"
-      },
-      a: {
-        en: "Yes, all designs are fully customized based on your space.",
-        ar: "نعم، جميع التصاميم مخصصة بالكامل حسب المساحة."
-      }
-    },
-    {
-      q: {
-        en: "What materials do you use?",
-        ar: "ما هي المواد المستخدمة؟"
-      },
-      a: {
-        en: "We use premium quality materials for luxury finishing.",
-        ar: "نستخدم مواد عالية الجودة لضمان الفخامة."
-      }
-    },
-    {
-      q: {
-        en: "Do you handle full project execution?",
-        ar: "هل تنفذون المشروع بالكامل؟"
-      },
-      a: {
-        en: "Yes, we provide complete turnkey solutions.",
-        ar: "نعم، نقدم تنفيذ كامل للمشاريع."
-      }
-    },
-    {
-      q: {
-        en: "How long does a project take?",
-        ar: "كم يستغرق تنفيذ المشروع؟"
-      },
-      a: {
-        en: "Timeline depends on project size, but delivery is always on time.",
-        ar: "المدة تعتمد على حجم المشروع، مع التزامنا بالوقت."
-      }
-    },
-    {
-      q: {
-        en: "Do you work on villas?",
-        ar: "هل تعملون على الفلل؟"
-      },
-      a: {
-        en: "Yes, we specialize in luxury villas and interiors.",
-        ar: "نعم، نحن متخصصون في الفلل الفاخرة."
-      }
-    },
-    {
-      q: {
-        en: "Is site supervision included?",
-        ar: "هل يوجد إشراف على الموقع؟"
-      },
-      a: {
-        en: "Yes, full supervision is provided for quality control.",
-        ar: "نعم، يتم الإشراف الكامل لضمان الجودة."
-      }
-    },
-    {
-      q: {
-        en: "Do you offer consultation?",
-        ar: "هل تقدمون استشارة؟"
-      },
-      a: {
-        en: "Yes, we guide you before starting the project.",
-        ar: "نعم، نقدم استشارة قبل بدء المشروع."
-      }
-    },
-    {
-      q: {
-        en: "Can I modify the design?",
-        ar: "هل يمكن تعديل التصميم؟"
-      },
-      a: {
-        en: "Yes, small changes can be made during execution.",
-        ar: "نعم، يمكن تعديل التصميم أثناء التنفيذ."
-      }
-    },
+  /* ================= FAQ DATA ================= */
 
-    /* EXTRA (READ MORE) */
-    {
-      q: {
-        en: "Do you provide lighting solutions?",
-        ar: "هل توفرون إضاءة؟"
-      },
-      a: {
-        en: "Yes, modern lighting is included in our services.",
-        ar: "نعم، نقدم حلول إضاءة حديثة."
-      }
-    },
-    {
-      q: {
-        en: "What makes your work premium?",
-        ar: "ما الذي يجعل عملكم مميزاً؟"
-      },
-      a: {
-        en: "Precision, materials, and finishing define our quality.",
-        ar: "الدقة والتشطيب يميز عملنا."
-      }
-    }
-  ];
+  const faqData = {
 
-  const visibleFaqs = showAll ? faqData : faqData.slice(0, 8);
+    /* ================= MASNA ================= */
+
+    masna: [
+
+      {
+        q: {
+          en: "Do you create custom POP ceiling designs?",
+          ar: "هل تقومون بتصميم أسقف جبسية مخصصة؟",
+        },
+
+        a: {
+          en: "Yes, every POP ceiling design is customized according to the space and interior theme.",
+          ar: "نعم، جميع تصاميم الأسقف الجبسية يتم تنفيذها حسب المساحة والديكور الداخلي.",
+        },
+      },
+
+      {
+        q: {
+          en: "What type of gypsum work do you provide?",
+          ar: "ما أنواع أعمال الجبس التي تقدمونها؟",
+        },
+
+        a: {
+          en: "We provide ceilings, mouldings, wall panels and luxury gypsum decorations.",
+          ar: "نوفر الأسقف والزخارف الجدارية والألواح الجبسية والتفاصيل الفاخرة.",
+        },
+      },
+
+      {
+        q: {
+          en: "Do you make luxury wall mouldings?",
+          ar: "هل توفرون زخارف جدارية فاخرة؟",
+        },
+
+        a: {
+          en: "Yes, we specialize in premium wall moulding concepts for luxury interiors.",
+          ar: "نعم، نحن متخصصون في الزخارف الجدارية الفاخرة.",
+        },
+      },
+
+      {
+        q: {
+          en: "Can you create modern ceiling concepts?",
+          ar: "هل يمكنكم تنفيذ أسقف حديثة؟",
+        },
+
+        a: {
+          en: "Yes, we execute modern and luxury ceiling concepts.",
+          ar: "نعم، نقوم بتنفيذ الأسقف الحديثة والفاخرة.",
+        },
+      },
+
+      {
+        q: {
+          en: "Do you provide gypsum carving work?",
+          ar: "هل تقدمون أعمال نقش الجبس؟",
+        },
+
+        a: {
+          en: "Yes, handcrafted gypsum carving is part of our specialty.",
+          ar: "نعم، أعمال النقش الفني من تخصصنا.",
+        },
+      },
+
+      {
+        q: {
+          en: "What materials are used in your POP work?",
+          ar: "ما المواد المستخدمة في أعمال الجبس؟",
+        },
+
+        a: {
+          en: "We use high quality gypsum materials for durability and premium finishing.",
+          ar: "نستخدم خامات جبسية عالية الجودة لضمان الفخامة والمتانة.",
+        },
+      },
+
+      {
+        q: {
+          en: "Do you work on villas and apartments?",
+          ar: "هل تعملون على الفلل والشقق؟",
+        },
+
+        a: {
+          en: "Yes, we execute gypsum work for villas and apartments.",
+          ar: "نعم، نعمل على الفلل والشقق والمساحات الداخلية الفاخرة.",
+        },
+      },
+
+      {
+        q: {
+          en: "How long does POP work usually take?",
+          ar: "كم تستغرق أعمال الجبس؟",
+        },
+
+        a: {
+          en: "Execution time depends on project size and detailing.",
+          ar: "تعتمد مدة التنفيذ على حجم المشروع والتفاصيل.",
+        },
+      },
+
+      {
+        q: {
+          en: "Can I request custom ceiling ideas?",
+          ar: "هل يمكنني طلب تصميم خاص؟",
+        },
+
+        a: {
+          en: "Yes, every client can request unique custom ceiling concepts.",
+          ar: "نعم، يمكن طلب أفكار وتصاميم مخصصة.",
+        },
+      },
+
+      {
+        q: {
+          en: "Do you provide consultation before work?",
+          ar: "هل تقدمون استشارة قبل التنفيذ؟",
+        },
+
+        a: {
+          en: "Yes, we help clients choose the best ceiling and wall concepts.",
+          ar: "نعم، نساعد العملاء في اختيار أفضل التصاميم.",
+        },
+      },
+
+    ],
+
+    /* ================= CONTRACTOR ================= */
+
+    contractor: [
+
+      {
+        q: {
+          en: "Do you provide complete interior contracting?",
+          ar: "هل تقدمون تنفيذ داخلي متكامل؟",
+        },
+
+        a: {
+          en: "Yes, we provide complete turnkey interior execution services.",
+          ar: "نعم، نقدم خدمات تنفيذ داخلي متكاملة.",
+        },
+      },
+
+      {
+        q: {
+          en: "Do you install modern lighting systems?",
+          ar: "هل تقومون بتركيب الإضاءة الحديثة؟",
+        },
+
+        a: {
+          en: "Yes, we execute modern lighting concepts.",
+          ar: "نعم، نقوم بتنفيذ أنظمة الإضاءة الحديثة.",
+        },
+      },
+
+      {
+        q: {
+          en: "Can you execute villa interior projects?",
+          ar: "هل يمكنكم تنفيذ مشاريع الفلل؟",
+        },
+
+        a: {
+          en: "Yes, villa interiors are one of our core specialties.",
+          ar: "نعم، تنفيذ الديكور الداخلي للفلل من تخصصاتنا.",
+        },
+      },
+
+      {
+        q: {
+          en: "Do you handle full finishing work?",
+          ar: "هل تقومون بالتشطيبات الكاملة؟",
+        },
+
+        a: {
+          en: "Yes, we handle premium finishing professionally.",
+          ar: "نعم، نقوم بالتشطيبات الفاخرة باحترافية عالية.",
+        },
+      },
+
+      {
+        q: {
+          en: "Do you work with contract agreements?",
+          ar: "هل يتم العمل بعقود واضحة؟",
+        },
+
+        a: {
+          en: "Yes, projects are handled with trusted contracts.",
+          ar: "نعم، يتم تنفيذ المشاريع بعقود واضحة.",
+        },
+      },
+
+      {
+        q: {
+          en: "Do you provide site supervision?",
+          ar: "هل يوجد إشراف على الموقع؟",
+        },
+
+        a: {
+          en: "Yes, our team supervises every stage of the project.",
+          ar: "نعم، يتم الإشراف على جميع مراحل التنفيذ.",
+        },
+      },
+
+      {
+        q: {
+          en: "Can I request modern interior themes?",
+          ar: "هل يمكن طلب تصميم داخلي حديث؟",
+        },
+
+        a: {
+          en: "Yes, we execute modern and luxury interior themes.",
+          ar: "نعم، ننفذ التصاميم الحديثة والفاخرة.",
+        },
+      },
+
+      {
+        q: {
+          en: "Do you provide commercial interior work?",
+          ar: "هل تعملون على المشاريع التجارية؟",
+        },
+
+        a: {
+          en: "Yes, we handle residential and commercial projects.",
+          ar: "نعم، نعمل على المشاريع السكنية والتجارية.",
+        },
+      },
+
+      {
+        q: {
+          en: "How can I contact your team?",
+          ar: "كيف يمكنني التواصل معكم؟",
+        },
+
+        a: {
+          en: "You can contact us directly through WhatsApp or phone consultation.",
+          ar: "يمكنكم التواصل معنا مباشرة عبر الواتساب أو الاتصال.",
+        },
+      },
+
+      {
+        q: {
+          en: "Do you provide premium finishing?",
+          ar: "هل توفرون تشطيبات فاخرة؟",
+        },
+
+        a: {
+          en: "Yes, premium finishing is one of our strongest specialties.",
+          ar: "نعم، التشطيبات الفاخرة من أهم خدماتنا.",
+        },
+      },
+
+    ],
+
+  };
+
+  const allFaqs =
+    faqData[mode] || [];
+
+  const visibleFaqs =
+    allFaqs.slice(
+      0,
+      visibleCount
+    );
+
+  const remaining =
+    allFaqs.length -
+    visibleCount;
 
   return (
-    <div className="bg-black text-white py-24 px-4 md:px-20">
+    <section className="
+      relative
+      bg-black
+      text-white
+      py-24 md:py-32
+      px-4 md:px-20
+      overflow-hidden
+    ">
 
-      {/* 🔥 HEADER */}
-      <div className="text-center mb-16">
-        <h1 className="text-4xl md:text-6xl font-bold text-yellow-400 mb-4">
-          {lang === "ar" ? "الأسئلة الشائعة" : "FAQ"}
+      {/* BG */}
+
+      <div className="
+        absolute top-1/2 left-1/2
+        -translate-x-1/2
+        -translate-y-1/2
+
+        w-[700px]
+        h-[700px]
+
+        bg-yellow-500/5
+
+        blur-[150px]
+
+        rounded-full
+      " />
+
+      {/* HEADER */}
+
+      <div className="
+        relative z-10
+
+        text-center
+
+        max-w-4xl
+
+        mx-auto
+
+        mb-20
+      ">
+
+        <div className="
+          inline-flex
+
+          items-center
+
+          gap-3
+
+          px-5 py-2
+
+          rounded-full
+
+          bg-white/[0.04]
+
+          border border-yellow-500/10
+
+          backdrop-blur-xl
+
+          mb-8
+        ">
+
+          <FaGem className="
+            text-yellow-400
+          " />
+
+          <span className="
+            text-sm text-gray-300
+          ">
+
+            {lang === "ar"
+
+              ? "الأسئلة والاستفسارات"
+
+              : "Questions & Consultation"}
+
+          </span>
+
+        </div>
+
+        <h1 className="
+          text-4xl md:text-6xl
+
+          font-black
+
+          text-yellow-400
+
+          mb-6
+        ">
+
+          FAQ
+
         </h1>
-        <p className="text-gray-400">
-          {lang === "ar"
-            ? "كل ما تحتاج معرفته"
-            : "Everything you need to know"}
-        </p>
+
       </div>
 
-      {/* 🔥 FAQ LIST */}
-      <div className="max-w-4xl mx-auto space-y-6">
+      {/* FAQ */}
 
-        {visibleFaqs.map((item, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className="border border-yellow-500/20 rounded-2xl overflow-hidden 
-                       bg-gradient-to-b from-[#111] to-[#050505]"
-          >
-            {/* QUESTION */}
-            <div
-              onClick={() => setOpenIndex(openIndex === i ? null : i)}
-              className="flex justify-between items-center p-6 cursor-pointer"
+      <div className="
+        relative z-10
+
+        max-w-5xl
+
+        mx-auto
+
+        space-y-5
+      ">
+
+        {visibleFaqs.map(
+          (item, i) => (
+
+            <motion.div
+
+              key={i}
+
+              initial={{
+                opacity: 0,
+                y: 30,
+              }}
+
+              whileInView={{
+                opacity: 1,
+                y: 0,
+              }}
+
+              viewport={{
+                once: true,
+              }}
+
+              className="
+                bg-[#0b0b0b]
+
+                border border-yellow-500/10
+
+                rounded-[30px]
+
+                overflow-hidden
+
+                shadow-[0_10px_40px_rgba(0,0,0,0.4)]
+              "
             >
-              <h2 className="text-lg md:text-xl font-semibold text-yellow-400">
-                {item.q[lang]}
-              </h2>
 
-              <motion.div animate={{ rotate: openIndex === i ? 180 : 0 }}>
-                <FaChevronDown />
-              </motion.div>
-            </div>
+              <button
 
-            {/* ANSWER */}
-            <AnimatePresence>
-              {openIndex === i && (
+                onClick={() =>
+                  setOpenIndex(
+                    openIndex === i
+                      ? null
+                      : i
+                  )
+                }
+
+                className="
+                  w-full
+
+                  flex items-center
+                  justify-between
+
+                  gap-6
+
+                  px-7 py-6
+
+                  text-left
+                "
+              >
+
+                <h2 className="
+                  text-lg md:text-xl
+
+                  font-semibold
+
+                  text-white
+                ">
+
+                  {item.q[lang]}
+
+                </h2>
+
                 <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="px-6 pb-6 text-gray-300"
+
+                  animate={{
+                    rotate:
+                      openIndex === i
+                        ? 180
+                        : 0,
+                  }}
+
+                  className="
+                    min-w-[42px]
+                    h-[42px]
+
+                    rounded-full
+
+                    bg-yellow-500/10
+
+                    flex items-center
+                    justify-center
+
+                    text-yellow-400
+                  "
                 >
-                  {item.a[lang]}
+
+                  <FaChevronDown />
+
                 </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        ))}
+
+              </button>
+
+              <AnimatePresence>
+
+                {openIndex === i && (
+
+                  <motion.div
+
+                    initial={{
+                      height: 0,
+                      opacity: 0,
+                    }}
+
+                    animate={{
+                      height: "auto",
+                      opacity: 1,
+                    }}
+
+                    exit={{
+                      height: 0,
+                      opacity: 0,
+                    }}
+
+                    className="
+                      overflow-hidden
+                    "
+                  >
+
+                    <div className="
+                      px-7 pb-7
+
+                      text-gray-400
+
+                      leading-relaxed
+                    ">
+
+                      {item.a[lang]}
+
+                    </div>
+
+                  </motion.div>
+
+                )}
+
+              </AnimatePresence>
+
+            </motion.div>
+
+          )
+        )}
 
       </div>
 
-      {/* 🔥 READ MORE */}
-      <div className="text-center mt-12">
-        <motion.button
-          onClick={() => setShowAll(!showAll)}
-          whileHover={{ scale: 1.08 }}
-          className="bg-gradient-to-r from-yellow-500 to-yellow-600 px-8 py-3 rounded-full font-semibold shadow-lg"
-        >
-          {showAll
-            ? (lang === "ar" ? "عرض أقل" : "Show Less")
-            : (lang === "ar" ? "عرض المزيد" : "Read More")}
-        </motion.button>
-      </div>
+      {/* LOAD MORE */}
 
-      {/* 🔥 CTA SECTION */}
-      <div className="mt-20 max-w-4xl mx-auto text-center
-                      bg-gradient-to-b from-[#111] to-[#050505]
-                      border border-yellow-500/20
-                      rounded-3xl p-10 shadow-[0_20px_60px_rgba(255,215,0,0.15)]">
+      {remaining > 0 && (
 
-        <h2 className="text-3xl md:text-4xl font-bold text-yellow-400 mb-4">
-          {lang === "ar" ? "هل لديك أسئلة أخرى؟" : "Still have questions?"}
-        </h2>
+        <div className="
+          relative z-10
 
-        <p className="text-gray-300 mb-8 text-lg">
-          {lang === "ar"
-            ? "إذا كنت بحاجة إلى المزيد، تواصل مع فريقنا."
-            : "If any other, consult our team."}
-        </p>
+          text-center
+
+          mt-14
+        ">
+
+          <motion.button
+
+            whileHover={{
+              scale: 1.04,
+            }}
+
+            whileTap={{
+              scale: 0.97,
+            }}
+
+            onClick={() =>
+              setVisibleCount(
+                (prev) =>
+                  prev + 5
+              )
+            }
+
+            className="
+              px-10 py-4
+
+              rounded-full
+
+              bg-yellow-500
+
+              text-black
+
+              font-bold
+            "
+          >
+
+            {lang === "ar"
+
+              ? `عرض المزيد (${remaining})`
+
+              : `Read More (${remaining})`}
+
+          </motion.button>
+
+        </div>
+
+      )}
+
+      {/* CTA */}
+
+      <div className="
+        relative z-10
+
+        mt-24
+
+        text-center
+      ">
 
         <motion.a
+
           href={`https://wa.me/${WHATSAPP}`}
+
           target="_blank"
-          whileHover={{ scale: 1.08 }}
-          className="inline-flex items-center gap-3
-                     bg-green-500 hover:bg-green-600
-                     px-10 py-4 rounded-full font-semibold text-lg
-                     shadow-xl hover:shadow-green-500/40"
+
+          rel="noopener noreferrer"
+
+          whileHover={{
+            scale: 1.04,
+          }}
+
+          whileTap={{
+            scale: 0.97,
+          }}
+
+          className="
+            inline-flex
+
+            items-center
+
+            gap-4
+
+            bg-green-500
+            hover:bg-green-600
+
+            px-10 py-5
+
+            rounded-full
+
+            text-lg
+
+            font-bold
+
+            shadow-[0_10px_40px_rgba(34,197,94,0.2)]
+
+            transition-all duration-300
+          "
         >
-          <FaWhatsapp className="text-2xl" />
-          {lang === "ar" ? "واتساب" : "WhatsApp"}
+
+          <FaWhatsapp className="
+            text-2xl
+          " />
+
+          {lang === "ar"
+
+            ? "تواصل عبر واتساب"
+
+            : "Consult on WhatsApp"}
+
         </motion.a>
+
       </div>
 
-    </div>
+    </section>
   );
 };
 

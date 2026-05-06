@@ -1,240 +1,864 @@
 import { useMode } from "../context/ModeContext";
 import { useLang } from "../context/LanguageContext";
-import { motion } from "framer-motion";
+
 import {
-  FaLightbulb,
-  FaTools,
-  FaCouch,
-  FaLayerGroup,
-  FaGem,
-  FaCrown,
+  motion,
+  AnimatePresence,
+} from "framer-motion";
+
+import {
   FaChevronLeft,
-  FaChevronRight
+  FaChevronRight,
 } from "react-icons/fa";
-import { useRef, useEffect, useState } from "react";
+
+import {
+  useRef,
+  useEffect,
+  useState,
+} from "react";
 
 const Services = () => {
-  const { mode } = useMode();
-  const { lang } = useLang();
 
-  const sliderRef = useRef(null);
-  const [selected, setSelected] = useState(null);
+  const { mode } =
+    useMode();
 
-  /* 🔥 SMOOTH AUTO INTRO (Apple feel) */
+  const { lang } =
+    useLang();
+
+  const sliderRef =
+    useRef(null);
+
+  const [selected, setSelected] =
+    useState(null);
+
+  /* ================= AUTO INTRO ================= */
+
   useEffect(() => {
-    const slider = sliderRef.current;
+
+    const slider =
+      sliderRef.current;
+
     if (!slider) return;
 
     setTimeout(() => {
+
       slider.scrollBy({
-        left: slider.offsetWidth * 0.6,
-        behavior: "smooth"
+        left:
+          slider.offsetWidth *
+          0.5,
+
+        behavior:
+          "smooth",
       });
-    }, 400);
+
+    }, 500);
 
     setTimeout(() => {
+
       slider.scrollTo({
         left: 0,
-        behavior: "smooth"
+
+        behavior:
+          "smooth",
       });
+
     }, 2000);
+
   }, []);
 
-  /* 🔥 SLIDE BUTTONS */
+  /* ================= SLIDE ================= */
+
   const scrollLeft = () => {
+
     sliderRef.current.scrollBy({
-      left: -sliderRef.current.offsetWidth * 0.8,
-      behavior: "smooth"
+
+      left:
+        -sliderRef.current
+          .offsetWidth * 0.8,
+
+      behavior: "smooth",
+
     });
   };
 
   const scrollRight = () => {
+
     sliderRef.current.scrollBy({
-      left: sliderRef.current.offsetWidth * 0.8,
-      behavior: "smooth"
+
+      left:
+        sliderRef.current
+          .offsetWidth * 0.8,
+
+      behavior: "smooth",
+
     });
   };
 
+  /* ================= CONTENT ================= */
+
   const content = {
+
     masna: {
-      title: { en: "Our Masna Services", ar: "خدمات المصنع" },
-      tagline: {
-        en: "Crafting luxury with precision.",
-        ar: "نصنع الفخامة بدقة"
+
+      title: {
+
+        en: "Our Masna Services",
+
+        ar: "خدمات المصنع",
+
       },
+
+      tagline: {
+
+        en: "Luxury POP craftsmanship designed for elegant interiors.",
+
+        ar: "تصاميم جبسية فاخرة للمساحات الراقية",
+
+      },
+
       services: [
-  { icon:<FaLayerGroup/>, title:{en:"POP Ceiling",ar:"أسقف جبسية"}, desc:{en:"Luxury ceiling finishing.",ar:"تشطيبات سقف فاخرة."}, img:"/images/Services masna1.jpg"},
-  { icon:<FaTools/>, title:{en:"POP Sheet Ceiling",ar:"ألواح جبس"}, desc:{en:"Smooth gypsum sheet ceiling.",ar:"ألواح جبسية ناعمة."}, img:"/images/Services masna2.jpg"},
-  { icon:<FaGem/>, title:{en:"POP Sheet Carving",ar:"نقش الجبس"}, desc:{en:"Custom carved sheet design.",ar:"نقوش مخصصة."}, img:"/images/Services masna3.jpg"},
-  { icon:<FaCouch/>, title:{en:"Wall Moulding",ar:"زخارف الجدران"}, desc:{en:"Elegant wall finishing.",ar:"تشطيبات أنيقة."}, img:"/images/Services masna 4.jpg"},
-  { icon:<FaLayerGroup/>, title:{en:"Decor Panels",ar:"ألواح زخرفية"}, desc:{en:"Luxury panels.",ar:"ألواح فاخرة."}, img:"/images/Services masna5.jpg"},
-  { icon:<FaCrown/>, title:{en:"Cornice Work",ar:"كورنيش"}, desc:{en:"Ceiling border design.",ar:"كورنيش فاخر."}, img:"/images/Services masna6.jpg"},
-  { icon:<FaGem/>, title:{en:"Arch Design",ar:"تصميم أقواس"}, desc:{en:"Luxury arch work.",ar:"تصميم أقواس."}, img:"/images/Services masna7.jpg"},
-  { icon:<FaTools/>, title:{en:"Hand Carving",ar:"نقش يدوي"}, desc:{en:"Fine detail carving.",ar:"تفاصيل دقيقة."}, img:"/images/Services masna8.jpg"},
-  { icon:<FaLayerGroup/>, title:{en:"Custom Gypsum",ar:"جبس مخصص"}, desc:{en:"Custom design work.",ar:"تصاميم حسب الطلب."}, img:"/images/Services masna9.jpg"},
-  { icon:<FaCrown/>, title:{en:"Classic Design",ar:"تصميم كلاسيك"}, desc:{en:"Royal style interiors.",ar:"تصاميم كلاسيكية."}, img:"/images/Services masna10.jpg"}
-]
+
+        {
+          title: {
+            en: "POP Ceiling",
+            ar: "أسقف جبسية",
+          },
+
+          desc: {
+            en: "Luxury ceiling finishing with elegant detailing.",
+
+            ar: "تشطيبات سقف فاخرة بتفاصيل راقية.",
+          },
+
+          img:
+            "/images/Services masna1.jpg",
+        },
+
+        {
+          title: {
+            en: "POP Sheet Ceiling",
+            ar: "ألواح جبسية",
+          },
+
+          desc: {
+            en: "Modern gypsum sheet ceilings for premium spaces.",
+
+            ar: "ألواح جبسية حديثة للمساحات الفاخرة.",
+          },
+
+          img:
+            "/images/Services masna2.jpg",
+        },
+
+        {
+          title: {
+            en: "POP Sheet Carving",
+            ar: "نقش الجبس",
+          },
+
+          desc: {
+            en: "Custom artistic carving with handcrafted precision.",
+
+            ar: "نقوش فنية بتفاصيل دقيقة.",
+          },
+
+          img:
+            "/images/Services masna3.jpg",
+        },
+
+        {
+          title: {
+            en: "Wall Moulding",
+            ar: "زخارف الجدران",
+          },
+
+          desc: {
+            en: "Elegant wall finishing inspired by luxury interiors.",
+
+            ar: "تشطيبات جدارية مستوحاة من الفخامة.",
+          },
+
+          img:
+            "/images/Services masna 4.jpg",
+        },
+
+        {
+          title: {
+            en: "Decor Panels",
+            ar: "ألواح زخرفية",
+          },
+
+          desc: {
+            en: "Decorative panels crafted for sophisticated interiors.",
+
+            ar: "ألواح زخرفية للمساحات الراقية.",
+          },
+
+          img:
+            "/images/Services masna5.jpg",
+        },
+
+        {
+          title: {
+            en: "Cornice Work",
+            ar: "كورنيش",
+          },
+
+          desc: {
+            en: "Luxury ceiling borders with classical aesthetics.",
+
+            ar: "كورنيش فاخر بتصميم كلاسيكي.",
+          },
+
+          img:
+            "/images/Services masna6.jpg",
+        },
+
+      ],
+
     },
 
     contractor: {
-      title: { en: "Our Contractor Services", ar: "خدمات المقاولات" },
-      tagline: {
-        en: "Execution defines luxury living.",
-        ar: "التنفيذ هو الفخامة"
+
+      title: {
+
+        en: "Our Contractor Services",
+
+        ar: "خدمات المقاولات",
+
       },
+
+      tagline: {
+
+        en: "Premium execution for luxury interior living.",
+
+        ar: "تنفيذ فاخر للمساحات الداخلية",
+
+      },
+
       services: [
-  { icon:<FaLightbulb/>, title:{en:"Lighting",ar:"إضاءة"}, desc:{en:"Modern LED systems.",ar:"إضاءة حديثة."}, img:"/images/Contractor service 1.jpg"},
-  { icon:<FaTools/>, title:{en:"Pillar Work",ar:"الأعمدة"}, desc:{en:"Luxury pillars.",ar:"أعمدة فاخرة."}, img:"/images/Contractor service 2.jpg"},
-  { icon:<FaLayerGroup/>, title:{en:"Wall Panels",ar:"الجدران"}, desc:{en:"Wall panel design.",ar:"تصميم الجدران."}, img:"/images/Contractor service 3.jpg"},
-  { icon:<FaGem/>, title:{en:"False Ceiling",ar:"أسقف مستعارة"}, desc:{en:"Modern ceilings.",ar:"أسقف حديثة."}, img:"/images/Contractor service 4.jpg"},
-  { icon:<FaCrown/>, title:{en:"Villa Work",ar:"فلل"}, desc:{en:"Luxury villa interior.",ar:"فلل فاخرة."}, img:"/images/Contractor service 5.jpg"},
-  { icon:<FaTools/>, title:{en:"Turnkey",ar:"تنفيذ كامل"}, desc:{en:"Complete projects.",ar:"تنفيذ كامل."}, img:"/images/Contractor service 6.jpg"},
-  { icon:<FaLayerGroup/>, title:{en:"Ceiling Design",ar:"تصميم سقف"}, desc:{en:"Modern ceiling style.",ar:"تصميم حديث."}, img:"/images/Contractor service 7.jpg"},
-  { icon:<FaGem/>, title:{en:"Interior Work",ar:"تشطيبات"}, desc:{en:"Full finishing.",ar:"تشطيبات كاملة."}, img:"/images/Contractor service 8.jpg"},
-  { icon:<FaCrown/>, title:{en:"Luxury Finish",ar:"تشطيب فاخر"}, desc:{en:"Premium finishing.",ar:"تشطيب فاخر."}, img:"/images/Contractor service 9.jpg"},
-  { icon:<FaTools/>, title:{en:"Custom Work",ar:"مخصص"}, desc:{en:"Custom design.",ar:"حسب الطلب."}, img:"/images/Contractor service 10.jpg"}
-]
-    }
+
+        {
+          title: {
+            en: "Lighting Design",
+            ar: "تصميم الإضاءة",
+          },
+
+          desc: {
+            en: "Modern lighting systems crafted for elegant ambiance.",
+
+            ar: "أنظمة إضاءة حديثة بأجواء راقية.",
+          },
+
+          img:
+            "/images/Contractor service 1.jpg",
+        },
+
+        {
+          title: {
+            en: "Pillar Work",
+            ar: "الأعمدة",
+          },
+
+          desc: {
+            en: "Architectural pillar concepts with premium execution.",
+
+            ar: "تصاميم أعمدة مع تنفيذ فاخر.",
+          },
+
+          img:
+            "/images/Contractor service 2.jpg",
+        },
+
+        {
+          title: {
+            en: "Wall Panels",
+            ar: "الجدران",
+          },
+
+          desc: {
+            en: "Luxury wall concepts designed for modern interiors.",
+
+            ar: "تصاميم جدارية حديثة وفاخرة.",
+          },
+
+          img:
+            "/images/Contractor service 3.jpg",
+        },
+
+        {
+          title: {
+            en: "False Ceiling",
+            ar: "أسقف مستعارة",
+          },
+
+          desc: {
+            en: "Modern false ceiling systems with elegant finishing.",
+
+            ar: "أسقف حديثة بتشطيبات راقية.",
+          },
+
+          img:
+            "/images/Contractor service 4.jpg",
+        },
+
+        {
+          title: {
+            en: "Villa Interior",
+            ar: "تصميم فلل",
+          },
+
+          desc: {
+            en: "Luxury villa interior execution with premium detailing.",
+
+            ar: "تنفيذ فلل فاخرة بتفاصيل راقية.",
+          },
+
+          img:
+            "/images/Contractor service 5.jpg",
+        },
+
+        {
+          title: {
+            en: "Turnkey Projects",
+            ar: "تنفيذ كامل",
+          },
+
+          desc: {
+            en: "Complete turnkey solutions for luxury projects.",
+
+            ar: "حلول تنفيذ متكاملة للمشاريع الفاخرة.",
+          },
+
+          img:
+            "/images/Contractor service 6.jpg",
+        },
+
+      ],
+
+    },
+
   };
 
   const data = content[mode];
 
   const numbers = {
-    masna: "+96599575150",
-    contractor: "+96555807419"
+
+    masna:
+      "+96599575150",
+
+    contractor:
+      "+96555807419",
+
   };
 
-  const whatsappLink = `https://wa.me/${numbers[mode].replace("+", "")}`;
+  const whatsappLink =
+    `https://wa.me/${numbers[
+      mode
+    ].replace("+", "")}`;
 
   return (
-    <div className="bg-black text-white py-24 px-4 md:px-20">
+    <section className="
+      relative
 
-      {/* HEADER */}
-      <div className="text-center mb-20">
-        <h1 className="text-4xl md:text-6xl font-bold text-yellow-400 mb-4">
+      bg-black
+
+      text-white
+
+      py-24 md:py-32
+
+      overflow-hidden
+    ">
+
+      {/* BG GLOW */}
+
+      <div className="
+        absolute top-1/2 left-1/2
+        -translate-x-1/2
+        -translate-y-1/2
+
+        w-[700px]
+        h-[700px]
+
+        bg-yellow-500/5
+
+        blur-[150px]
+
+        rounded-full
+      " />
+
+      {/* ================= HEADER ================= */}
+
+      <div className="
+        relative z-10
+
+        text-center
+
+        px-5
+
+        mb-20
+      ">
+
+        <h1 className="
+          text-4xl md:text-6xl
+
+          font-black
+
+          text-yellow-400
+
+          mb-5
+        ">
+
           {data.title[lang]}
+
         </h1>
-        <p className="text-gray-400">{data.tagline[lang]}</p>
+
+        <p className="
+          text-gray-400
+
+          max-w-2xl
+
+          mx-auto
+        ">
+
+          {data.tagline[lang]}
+
+        </p>
+
       </div>
 
-      {/* SLIDER WRAPPER */}
-      <div className="relative">
+      {/* ================= SLIDER ================= */}
 
-        {/* LEFT BUTTON */}
+      <div className="
+        relative z-10
+      ">
+
+        {/* BUTTON LEFT */}
+
         <button
           onClick={scrollLeft}
-          className="hidden md:flex absolute left-[-25px] top-1/2 -translate-y-1/2 z-10
-          bg-black/60 backdrop-blur-md border border-yellow-500/20
-          text-white p-3 rounded-full hover:scale-110 transition"
+
+          className="
+            hidden md:flex
+
+            absolute left-6 top-1/2
+            -translate-y-1/2
+
+            z-20
+
+            w-14 h-14
+
+            rounded-full
+
+            bg-black/60
+
+            border border-yellow-500/10
+
+            backdrop-blur-xl
+
+            items-center
+            justify-center
+
+            hover:scale-110
+
+            transition-all duration-300
+          "
         >
+
           <FaChevronLeft />
+
         </button>
 
-        {/* RIGHT BUTTON */}
+        {/* BUTTON RIGHT */}
+
         <button
           onClick={scrollRight}
-          className="hidden md:flex absolute right-[-25px] top-1/2 -translate-y-1/2 z-10
-          bg-black/60 backdrop-blur-md border border-yellow-500/20
-          text-white p-3 rounded-full hover:scale-110 transition"
+
+          className="
+            hidden md:flex
+
+            absolute right-6 top-1/2
+            -translate-y-1/2
+
+            z-20
+
+            w-14 h-14
+
+            rounded-full
+
+            bg-black/60
+
+            border border-yellow-500/10
+
+            backdrop-blur-xl
+
+            items-center
+            justify-center
+
+            hover:scale-110
+
+            transition-all duration-300
+          "
         >
+
           <FaChevronRight />
+
         </button>
 
-        {/* SLIDER */}
+        {/* CARDS */}
+
         <div
           ref={sliderRef}
-          className="flex gap-6 overflow-x-auto no-scrollbar pb-6 scroll-smooth snap-x snap-mandatory"
+
+          className="
+            flex
+
+            gap-6
+
+            overflow-x-auto
+
+            no-scrollbar
+
+            snap-x snap-mandatory
+
+            scroll-smooth
+
+            px-5 md:px-20
+
+            pb-8
+          "
         >
-          {data.services.map((item, i) => (
-            <motion.div
-              key={i}
-              onClick={() => setSelected(item)}
-              whileHover={{ scale: 1.05 }}
-              className="
-                snap-center
-                min-w-[85%]
-                sm:min-w-[60%]
-                md:min-w-[32%]
-                rounded-3xl
-                overflow-hidden
-                bg-gradient-to-b from-[#111] to-[#050505]
-                border border-yellow-500/10
-                shadow-[0_0_40px_rgba(255,215,0,0.08)]
-                group
-              "
-            >
-              {/* IMAGE */}
-              <div className="h-[260px] overflow-hidden relative">
+
+          {data.services.map(
+            (item, i) => (
+
+              <motion.div
+
+                whileHover={{
+                  y: -6,
+                }}
+
+                key={i}
+
+                onClick={() =>
+                  setSelected(item)
+                }
+
+                className="
+                  relative
+
+                  snap-center
+
+                  min-w-[88%]
+                  sm:min-w-[65%]
+                  lg:min-w-[38%]
+
+                  h-[520px]
+
+                  rounded-[36px]
+
+                  overflow-hidden
+
+                  cursor-pointer
+
+                  group
+
+                  border border-yellow-500/10
+
+                  shadow-[0_0_50px_rgba(255,215,0,0.06)]
+                "
+              >
+
+                {/* IMAGE */}
+
                 <img
                   src={item.img}
-                  className="w-full h-full object-cover group-hover:scale-110 transition duration-700"
-                />
-                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition" />
-              </div>
 
-              {/* CONTENT */}
-              <div className="p-6">
-                <div className="text-yellow-400 text-3xl mb-3">
-                  {item.icon}
+                  className="
+                    absolute inset-0
+
+                    w-full h-full
+
+                    object-cover
+
+                    group-hover:scale-110
+
+                    transition duration-1000
+                  "
+                />
+
+                {/* OVERLAY */}
+
+                <div className="
+                  absolute inset-0
+
+                  bg-gradient-to-t
+                  from-black
+                  via-black/30
+                  to-transparent
+                " />
+
+                {/* CONTENT */}
+
+                <div className="
+                  absolute bottom-0 left-0
+
+                  w-full
+
+                  p-8
+                ">
+
+                  <div className="
+                    inline-flex
+
+                    px-4 py-2
+
+                    rounded-full
+
+                    bg-white/10
+
+                    backdrop-blur-xl
+
+                    border border-white/10
+
+                    text-xs
+
+                    tracking-[2px]
+
+                    uppercase
+
+                    text-yellow-300
+
+                    mb-5
+                  ">
+
+                    Premium Service
+
+                  </div>
+
+                  <h2 className="
+                    text-3xl
+
+                    font-bold
+
+                    mb-4
+                  ">
+
+                    {item.title[lang]}
+
+                  </h2>
+
+                  <p className="
+                    text-gray-300
+
+                    leading-relaxed
+                  ">
+
+                    {item.desc[lang]}
+
+                  </p>
+
                 </div>
 
-                <h2 className="text-lg md:text-xl font-semibold mb-2">
-                  {item.title[lang]}
-                </h2>
+              </motion.div>
 
-                <p className="text-gray-400 text-sm">
-                  {item.desc[lang]}
-                </p>
-              </div>
-            </motion.div>
-          ))}
+            )
+          )}
+
         </div>
+
       </div>
 
-      {/* MODAL */}
-      {selected && (
-        <div
-          className="fixed inset-0 bg-black/90 flex items-center justify-center z-50"
-          onClick={() => setSelected(null)}
-        >
-          <motion.div
-            initial={{ scale: 0.7, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="max-w-4xl w-full p-6"
-          >
-            <img
-              src={selected.img}
-              className="w-full max-h-[70vh] object-contain rounded-xl mb-6"
-            />
-            <h2 className="text-2xl text-yellow-400 mb-2">
-              {selected.title[lang]}
-            </h2>
-            <p className="text-gray-300">
-              {selected.desc[lang]}
-            </p>
-          </motion.div>
-        </div>
-      )}
+      {/* ================= MODAL ================= */}
 
-      {/* CTA */}
-      <div className="mt-24 text-center">
-        <p className="text-gray-300 mb-4">
+      <AnimatePresence>
+
+        {selected && (
+
+          <motion.div
+
+            initial={{
+              opacity: 0,
+            }}
+
+            animate={{
+              opacity: 1,
+            }}
+
+            exit={{
+              opacity: 0,
+            }}
+
+            onClick={() =>
+              setSelected(null)
+            }
+
+            className="
+              fixed inset-0
+
+              bg-black/90
+
+              backdrop-blur-xl
+
+              z-50
+
+              flex items-center
+              justify-center
+
+              p-5
+            "
+          >
+
+            <motion.div
+
+              initial={{
+                scale: 0.9,
+                opacity: 0,
+              }}
+
+              animate={{
+                scale: 1,
+                opacity: 1,
+              }}
+
+              exit={{
+                scale: 0.9,
+                opacity: 0,
+              }}
+
+              className="
+                max-w-5xl
+
+                w-full
+
+                overflow-hidden
+
+                rounded-[32px]
+
+                bg-[#0a0a0a]
+
+                border border-yellow-500/10
+              "
+            >
+
+              <img
+                src={selected.img}
+
+                className="
+                  w-full
+
+                  max-h-[75vh]
+
+                  object-cover
+                "
+              />
+
+              <div className="
+                p-8
+              ">
+
+                <h2 className="
+                  text-3xl
+
+                  font-bold
+
+                  text-yellow-400
+
+                  mb-4
+                ">
+
+                  {selected.title[lang]}
+
+                </h2>
+
+                <p className="
+                  text-gray-300
+                ">
+
+                  {selected.desc[lang]}
+
+                </p>
+
+              </div>
+
+            </motion.div>
+
+          </motion.div>
+
+        )}
+
+      </AnimatePresence>
+
+      {/* ================= CTA ================= */}
+
+      <div className="
+        relative z-10
+
+        mt-24
+
+        text-center
+
+        px-5
+      ">
+
+        <p className="
+          text-gray-300
+
+          mb-6
+        ">
+
           {lang === "ar"
+
             ? "هل لديك فكرة؟ دعنا نحولها إلى واقع"
+
             : "Have a vision? Let’s turn it into reality."}
+
         </p>
 
         <motion.a
-          whileHover={{ scale: 1.08 }}
+
+          whileHover={{
+            scale: 1.04,
+          }}
+
+          whileTap={{
+            scale: 0.97,
+          }}
+
           href={whatsappLink}
-          className="bg-green-500 hover:bg-green-600 px-10 py-4 rounded-full font-semibold shadow-xl"
+
+          className="
+            inline-flex
+
+            items-center
+            justify-center
+
+            bg-green-500
+            hover:bg-green-600
+
+            px-10 py-4
+
+            rounded-full
+
+            font-semibold
+
+            shadow-[0_0_40px_rgba(34,197,94,0.2)]
+
+            transition-all duration-300
+          "
         >
-          {lang === "ar" ? "استشارة الآن" : "Consult Now"}
+
+          {lang === "ar"
+
+            ? "استشارة الآن"
+
+            : "Consult Now"}
+
         </motion.a>
 
       </div>
 
-    </div>
+    </section>
   );
 };
 
