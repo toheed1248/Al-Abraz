@@ -587,6 +587,142 @@ const Navbar = () => {
 
               </div>
 
+              {/* ================= ADMIN BUTTONS ================= */}
+
+              {isAdmin ? (
+
+                <div className="
+                  flex items-center
+
+                  gap-3
+                ">
+
+                  <button
+                    onClick={() =>
+                      navigate(
+                        "/admin/dashboard"
+                      )
+                    }
+
+                    className="
+                      relative
+
+                      overflow-hidden
+
+                      px-5 py-3
+
+                      rounded-2xl
+
+                      bg-gradient-to-r
+                      from-yellow-400
+                      to-yellow-500
+
+                      text-black
+
+                      text-sm
+
+                      font-bold
+
+                      shadow-[0_0_30px_rgba(255,215,0,0.18)]
+
+                      hover:scale-[1.03]
+
+                      transition-all duration-300
+                    "
+                  >
+
+                    <span className="
+                      relative z-10
+                    ">
+
+                      {t.dashboard}
+
+                    </span>
+
+                  </button>
+
+                  <button
+                    onClick={handleLogout}
+
+                    className="
+                      px-5 py-3
+
+                      rounded-2xl
+
+                      bg-red-500/10
+
+                      border border-red-500/20
+
+                      text-red-400
+
+                      text-sm
+
+                      font-semibold
+
+                      hover:bg-red-500
+
+                      hover:text-white
+
+                      transition-all duration-300
+                    "
+                  >
+
+                    {t.logout}
+
+                  </button>
+
+                </div>
+
+              ) : (
+
+                <button
+                  onClick={() =>
+                    navigate("/admin")
+                  }
+
+                  className="
+                    relative
+
+                    overflow-hidden
+
+                    px-6 py-3
+
+                    rounded-2xl
+
+                    border border-yellow-500/20
+
+                    bg-white/[0.03]
+
+                    backdrop-blur-xl
+
+                    text-white
+
+                    text-sm
+
+                    font-semibold
+
+                    hover:bg-yellow-500
+
+                    hover:text-black
+
+                    hover:border-yellow-400
+
+                    transition-all duration-300
+                  "
+                >
+
+                  <span className="
+                    relative z-10
+                  ">
+
+                    {t.login}
+
+                  </span>
+
+                </button>
+
+              )}
+
             </div>
 
           </div>
@@ -691,519 +827,595 @@ const Navbar = () => {
 
       </motion.nav>
 
-      {/* ================= MOBILE MENU ================= */}
+     {/* ================= MOBILE MENU ================= */}
 
-      <AnimatePresence>
+<AnimatePresence>
 
-        {menuOpen && (
+  {menuOpen && (
 
-          <>
-            {/* OVERLAY */}
+    <>
+      {/* OVERLAY */}
 
-            <motion.div
-              initial={{
-                opacity: 0,
-              }}
+      <motion.div
+        initial={{
+          opacity: 0,
+        }}
 
-              animate={{
-                opacity: 1,
-              }}
+        animate={{
+          opacity: 1,
+        }}
 
-              exit={{
-                opacity: 0,
-              }}
+        exit={{
+          opacity: 0,
+        }}
+
+        onClick={() =>
+          setMenuOpen(false)
+        }
+
+        className="
+          fixed inset-0
+
+          bg-black/70
+
+          backdrop-blur-md
+
+          z-40
+        "
+      />
+
+      {/* MENU */}
+
+      <motion.div
+
+        initial={{
+          x:
+            lang === "ar"
+              ? 400
+              : -400,
+        }}
+
+        animate={{
+          x: 0,
+        }}
+
+        exit={{
+          x:
+            lang === "ar"
+              ? 400
+              : -400,
+        }}
+
+        transition={{
+          type: "spring",
+          stiffness: 120,
+        }}
+
+        className={`
+          fixed top-0
+
+          ${
+            lang === "ar"
+              ? "right-0"
+              : "left-0"
+          }
+
+          h-full
+
+          w-[85%]
+          max-w-[360px]
+
+          bg-[#050505]/95
+
+          backdrop-blur-2xl
+
+          border-r border-yellow-500/10
+
+          z-50
+
+          flex flex-col
+
+          overflow-y-auto
+        `}
+      >
+
+        {/* ================= TOP ================= */}
+
+        <div className="
+          p-6
+
+          border-b border-yellow-500/10
+        ">
+
+          <h1 className="
+            text-2xl
+
+            font-black
+
+            tracking-[4px]
+
+            text-yellow-400
+          ">
+
+            {mode === "masna"
+
+              ? "AL ABRAZ MASNA"
+
+              : "AL ABRAZ CONTRACTOR"}
+
+          </h1>
+
+          <p className="
+            text-xs
+
+            text-gray-400
+
+            mt-2
+
+            tracking-[2px]
+          ">
+
+            {lang === "ar"
+
+              ? "حلول داخلية فاخرة"
+
+              : "Premium Interior Solutions"}
+
+          </p>
+
+        </div>
+
+        {/* ================= LINKS ================= */}
+
+        <div className="
+          flex flex-col
+
+          px-5 py-6
+
+          gap-3
+        ">
+
+          {[
+            ["home", t.home],
+            ["about", t.about],
+            ["services", t.services],
+            ["gallery", t.gallery],
+            ["contact", t.contact],
+          ].map(([id, label]) => (
+
+            <button
+              key={id}
 
               onClick={() =>
-                setMenuOpen(false)
+                scrollTo(id)
               }
 
               className="
-                fixed inset-0
+                w-full
 
-                bg-black/70
+                text-left
 
-                backdrop-blur-md
+                px-5 py-4
 
-                z-40
+                rounded-2xl
+
+                bg-white/[0.03]
+
+                border border-white/5
+
+                text-white
+
+                hover:bg-yellow-500
+
+                hover:text-black
+
+                transition-all duration-300
               "
-            />
+            >
 
-            {/* MENU */}
+              {label}
 
-            <motion.div
+            </button>
 
-              initial={{
-                x:
-                  lang === "ar"
-                    ? 400
-                    : -400,
-              }}
+          ))}
 
-              animate={{
-                x: 0,
-              }}
+        </div>
 
-              exit={{
-                x:
-                  lang === "ar"
-                    ? 400
-                    : -400,
-              }}
+        {/* ================= MODE ================= */}
 
-              transition={{
-                type: "spring",
-                stiffness: 120,
-              }}
+        <div className="
+          px-5
+        ">
+
+          <div className="
+            flex
+
+            bg-white/5
+
+            border border-white/10
+
+            rounded-2xl
+
+            p-1
+          ">
+
+            <button
+              onClick={() =>
+                setMode("masna")
+              }
 
               className={`
-                fixed top-0
+                flex-1
+
+                py-4
+
+                rounded-2xl
+
+                text-sm
+
+                font-semibold
+
+                transition-all duration-300
 
                 ${
-                  lang === "ar"
-                    ? "right-0"
-                    : "left-0"
+                  mode === "masna"
+
+                    ? `
+                      bg-yellow-500
+                      text-black
+                    `
+
+                    : `
+                      text-white
+                    `
                 }
-
-                h-full
-
-                w-[85%]
-                max-w-[360px]
-
-                bg-[#050505]/95
-
-                backdrop-blur-2xl
-
-                border-r border-yellow-500/10
-
-                z-50
-
-                flex flex-col
               `}
             >
 
-              {/* ================= SCROLL AREA ================= */}
+              {t.masna}
 
-              <div className="
+            </button>
+
+            <button
+              onClick={() =>
+                setMode("contractor")
+              }
+
+              className={`
                 flex-1
 
-                overflow-y-auto
+                py-4
 
-                px-6 py-8
-              ">
+                rounded-2xl
 
-                {/* LOGO */}
+                text-sm
 
-                <div className="
-                  mb-10
-                ">
+                font-semibold
 
-                  <h1 className="
-                    text-3xl
+                transition-all duration-300
 
-                    font-black
+                ${
+                  mode === "contractor"
 
-                    text-yellow-400
-                  ">
+                    ? `
+                      bg-yellow-500
+                      text-black
+                    `
 
-                    {mode === "masna"
+                    : `
+                      text-white
+                    `
+                }
+              `}
+            >
 
-                      ? "AL ABRAZ MASNA"
+              {t.contractor}
 
-                      : "AL ABRAZ CONTRACTOR"}
+            </button>
 
-                  </h1>
+          </div>
 
-                  <p className="
-                    text-gray-400
+        </div>
 
-                    text-sm
+        {/* ================= LANGUAGE ================= */}
 
-                    mt-2
-                  ">
+        <div className="
+          px-5
 
-                    {lang === "ar"
+          mt-5
+        ">
 
-                      ? "حلول داخلية فاخرة"
+          <div className="
+            flex
 
-                      : "Premium Interior Solutions"}
+            bg-white/5
 
-                  </p>
+            border border-white/10
 
-                </div>
+            rounded-2xl
 
-                {/* NAV LINKS */}
+            p-1
+          ">
 
-                <div className="
-                  flex flex-col
+            <button
+              onClick={() =>
+                setLang("en")
+              }
 
-                  gap-3
-                ">
+              className={`
+                flex-1
 
-                  {[
-                    ["home", t.home],
-                    ["about", t.about],
-                    ["services", t.services],
-                    ["gallery", t.gallery],
-                    ["contact", t.contact],
-                  ].map(([id, label]) => (
+                py-4
 
-                    <button
-                      key={id}
+                rounded-2xl
 
-                      onClick={() =>
-                        scrollTo(id)
-                      }
+                text-sm
 
-                      className="
-                        text-left
+                font-bold
 
-                        text-lg
+                transition-all duration-300
 
-                        px-5 py-4
+                ${
+                  lang === "en"
 
-                        rounded-2xl
+                    ? `
+                      bg-white
+                      text-black
+                    `
 
-                        bg-white/5
+                    : `
+                      text-white
+                    `
+                }
+              `}
+            >
 
-                        border border-white/5
+              English
 
-                        hover:border-yellow-400/20
+            </button>
 
-                        hover:bg-yellow-500/10
+            <button
+              onClick={() =>
+                setLang("ar")
+              }
 
-                        transition-all duration-300
-                      "
-                    >
+              className={`
+                flex-1
 
-                      {label}
+                py-4
 
-                    </button>
+                rounded-2xl
 
-                  ))}
+                text-sm
 
-                </div>
+                font-bold
 
-                {/* MODE */}
+                transition-all duration-300
 
-                <div className="
-                  mt-8
-                ">
+                ${
+                  lang === "ar"
 
-                  <div className="
-                    grid grid-cols-2
+                    ? `
+                      bg-white
+                      text-black
+                    `
 
-                    gap-3
-                  ">
+                    : `
+                      text-white
+                    `
+                }
+              `}
+            >
 
-                    <button
-                      onClick={() =>
-                        setMode("masna")
-                      }
+              العربية
 
-                      className={`
-                        py-4
+            </button>
 
-                        rounded-2xl
+          </div>
 
-                        transition-all duration-300
+        </div>
 
-                        ${
-                          mode === "masna"
+        {/* ================= CONTACT ================= */}
 
-                            ? `
-                              bg-yellow-500
-                              text-black
-                            `
+        <div className="
+          px-5
 
-                            : `
-                              bg-white/5
-                            `
-                        }
-                      `}
-                    >
+          mt-6
 
-                      {t.masna}
+          flex flex-col
 
-                    </button>
+          gap-4
+        ">
 
-                    <button
-                      onClick={() =>
-                        setMode("contractor")
-                      }
+          {/* WHATSAPP */}
 
-                      className={`
-                        py-4
+          <a
+            href={whatsappLink}
 
-                        rounded-2xl
+            target="_blank"
 
-                        transition-all duration-300
+            rel="noopener noreferrer"
 
-                        ${
-                          mode === "contractor"
+            className="
+              flex items-center
+              justify-center
 
-                            ? `
-                              bg-yellow-500
-                              text-black
-                            `
+              gap-3
 
-                            : `
-                              bg-white/5
-                            `
-                        }
-                      `}
-                    >
+              py-4
 
-                      {t.contractor}
+              rounded-2xl
 
-                    </button>
+              bg-green-500
 
-                  </div>
+              text-white
 
-                </div>
+              font-semibold
 
-                {/* LANG */}
+              shadow-[0_10px_30px_rgba(34,197,94,0.2)]
+            "
+          >
 
-                <div className="
-                  mt-6
+            <FaWhatsapp />
 
-                  grid grid-cols-2
+            {t.whatsapp}
 
-                  gap-3
-                ">
+          </a>
 
-                  <button
-                    onClick={() =>
-                      setLang("en")
-                    }
+          {/* CALL */}
 
-                    className={`
-                      py-4
+          <a
+            href={`tel:${phoneNumber}`}
 
-                      rounded-2xl
+            className="
+              flex items-center
+              justify-center
 
-                      transition-all duration-300
+              gap-3
 
-                      ${
-                        lang === "en"
+              py-4
 
-                          ? `
-                            bg-white
-                            text-black
-                          `
+              rounded-2xl
 
-                          : `
-                            bg-white/5
-                          `
-                      }
-                    `}
-                  >
+              bg-white/[0.03]
 
-                    EN
+              border border-white/10
 
-                  </button>
+              text-white
 
-                  <button
-                    onClick={() =>
-                      setLang("ar")
-                    }
+              font-semibold
+            "
+          >
 
-                    className={`
-                      py-4
+            <FaPhone />
 
-                      rounded-2xl
+            {phoneNumber}
 
-                      transition-all duration-300
+          </a>
 
-                      ${
-                        lang === "ar"
+        </div>
 
-                          ? `
-                            bg-white
-                            text-black
-                          `
+        {/* ================= ADMIN ================= */}
 
-                          : `
-                            bg-white/5
-                          `
-                      }
-                    `}
-                  >
+        <div className="
+          px-5
 
-                    AR
+          mt-6
 
-                  </button>
+          pb-8
+        ">
 
-                </div>
+          {isAdmin ? (
 
-              </div>
+            <div className="
+              flex flex-col
 
-              {/* ================= BOTTOM ================= */}
+              gap-4
+            ">
 
-              <div className="
-                border-t border-yellow-500/10
+              {/* DASHBOARD */}
 
-                p-6
+              <button
+                onClick={() => {
 
-                flex flex-col
+                  navigate(
+                    "/admin/dashboard"
+                  );
 
-                gap-4
-              ">
+                  setMenuOpen(false);
+                }}
 
-                {/* PHONE */}
+                className="
+                  py-4
 
-                <a
-                  href={`tel:${phoneNumber}`}
+                  rounded-2xl
 
-                  className="
-                    flex items-center
-                    justify-center
+                  bg-yellow-500
 
-                    gap-3
+                  text-black
 
-                    bg-yellow-500
+                  font-bold
 
-                    text-black
+                  shadow-[0_10px_30px_rgba(255,215,0,0.15)]
+                "
+              >
 
-                    py-4
+                {t.dashboard}
 
-                    rounded-2xl
+              </button>
 
-                    font-semibold
-                  "
-                >
+              {/* LOGOUT */}
 
-                  <FaPhone />
+              <button
+                onClick={() => {
 
-                  {phoneNumber}
+                  handleLogout();
 
-                </a>
+                  setMenuOpen(false);
+                }}
 
-                {/* WHATSAPP */}
+                className="
+                  py-4
 
-                <a
-                  href={whatsappLink}
+                  rounded-2xl
 
-                  target="_blank"
+                  bg-red-500/10
 
-                  className="
-                    flex items-center
-                    justify-center
+                  border border-red-500/20
 
-                    gap-3
+                  text-red-400
 
-                    bg-green-500
+                  font-semibold
+                "
+              >
 
-                    py-4
+                {t.logout}
 
-                    rounded-2xl
+              </button>
 
-                    font-semibold
-                  "
-                >
+            </div>
 
-                  <FaWhatsapp />
+          ) : (
 
-                  {t.whatsapp}
+            <button
+              onClick={() => {
 
-                </a>
+                navigate("/admin");
 
-                {/* LOGIN / DASHBOARD */}
+                setMenuOpen(false);
+              }}
 
-                {isAdmin ? (
+              className="
+                w-full
 
-                  <div className="
-                    grid grid-cols-2
+                py-4
 
-                    gap-3
-                  ">
+                rounded-2xl
 
-                    <button
-                      onClick={() => {
+                bg-yellow-500
 
-                        navigate(
-                          "/admin/dashboard"
-                        );
+                text-black
 
-                        setMenuOpen(false);
+                font-bold
 
-                      }}
+                shadow-[0_10px_30px_rgba(255,215,0,0.15)]
+              "
+            >
 
-                      className="
-                        py-4
+              {t.login}
 
-                        rounded-2xl
+            </button>
 
-                        bg-white/5
-                      "
-                    >
+          )}
 
-                      {t.dashboard}
+        </div>
 
-                    </button>
+      </motion.div>
 
-                    <button
-                      onClick={
-                        handleLogout
-                      }
-
-                      className="
-                        py-4
-
-                        rounded-2xl
-
-                        bg-red-500/20
-
-                        text-red-400
-                      "
-                    >
-
-                      {t.logout}
-
-                    </button>
-
-                  </div>
-
-                ) : (
-
-                  <button
-                    onClick={() => {
-
-                      navigate("/admin");
-
-                      setMenuOpen(false);
-
-                    }}
-
-                    className="
-                      py-4
-
-                      rounded-2xl
-
-                      border border-yellow-500/20
-
-                      hover:bg-yellow-500
-
-                      hover:text-black
-
-                      transition-all duration-300
-                    "
-                  >
-
-                    {t.login}
-
-                  </button>
-
-                )}
-
-              </div>
-
-            </motion.div>
-
-          </>
-        )}
-
-      </AnimatePresence>
     </>
+  )}
+
+</AnimatePresence>  </>
   );
 };
 
