@@ -42,12 +42,10 @@ import IntroLoader from "./components/IntroLoader";
 import WelcomeGate from "./components/WelcomeGate";
 
 /* =========================================================
-   🔥 RTL HANDLER
+   RTL HANDLER
 ========================================================= */
 
-const RTLHandler = ({
-  children,
-}) => {
+const RTLHandler = ({ children }) => {
 
   const { lang } = useLang();
 
@@ -58,8 +56,7 @@ const RTLHandler = ({
         ? "rtl"
         : "ltr";
 
-    document.documentElement.lang =
-      lang;
+    document.documentElement.lang = lang;
 
   }, [lang]);
 
@@ -67,77 +64,48 @@ const RTLHandler = ({
 };
 
 /* =========================================================
-   🔥 APP CONTENT
+   APP CONTENT
 ========================================================= */
 
 const AppContent = () => {
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [entered, setEntered] =
-    useState(false);
+  const [entered, setEntered] = useState(false);
 
   /* ================= INITIAL LOADING ================= */
 
   useEffect(() => {
 
-    /*
-    🔥 PREVENT WHITE FLASH
-    */
-    document.body.style.background =
-      "#050505";
+    document.body.style.background = "#050505";
 
-    /*
-    🔥 LOADER
-    */
-    const timer =
-      setTimeout(() => {
-        setLoading(false);
-      }, 3000);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
 
-    /*
-    🔥 CHECK ENTRY
-    */
     const alreadyEntered =
-      localStorage.getItem(
-        "entered"
-      );
+      localStorage.getItem("entered");
 
-    if (
-      alreadyEntered === "true"
-    ) {
+    if (alreadyEntered === "true") {
       setEntered(true);
     }
 
-    return () =>
-      clearTimeout(timer);
+    return () => clearTimeout(timer);
 
   }, []);
 
   /* =====================================================
-     🔥 LOADER
+     LOADER
   ===================================================== */
 
   if (loading) {
     return (
       <AnimatePresence>
         <motion.div
-          initial={{
-            opacity: 0,
-          }}
-
-          animate={{
-            opacity: 1,
-          }}
-
-          exit={{
-            opacity: 0,
-          }}
-
-          transition={{
-            duration: 0.8,
-          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.8 }}
         >
           <IntroLoader />
         </motion.div>
@@ -146,48 +114,7 @@ const AppContent = () => {
   }
 
   /* =====================================================
-     🔥 WELCOME GATE
-  ===================================================== */
-
-  if (!entered) {
-    return (
-      <AnimatePresence>
-
-        <motion.div
-          initial={{
-            opacity: 0,
-            scale: 1.02,
-          }}
-
-          animate={{
-            opacity: 1,
-            scale: 1,
-          }}
-
-          exit={{
-            opacity: 0,
-            scale: 0.98,
-          }}
-
-          transition={{
-            duration: 0.8,
-          }}
-        >
-
-          <WelcomeGate
-            onEnter={() =>
-              setEntered(true)
-            }
-          />
-
-        </motion.div>
-
-      </AnimatePresence>
-    );
-  }
-
-  /* =====================================================
-     🔥 WEBSITE
+     MAIN WEBSITE
   ===================================================== */
 
   return (
@@ -198,20 +125,16 @@ const AppContent = () => {
           opacity: 0,
           y: 20,
         }}
-
         animate={{
           opacity: 1,
           y: 0,
         }}
-
         exit={{
           opacity: 0,
         }}
-
         transition={{
           duration: 1,
         }}
-
         className="
           bg-black
           text-white
@@ -219,7 +142,24 @@ const AppContent = () => {
         "
       >
 
-        <BrowserRouter>
+        {/* ================= WELCOME GATE ================= */}
+
+        {!entered ? (
+
+          <WelcomeGate
+            onEnter={() => {
+
+              localStorage.setItem(
+                "entered",
+                "true"
+              );
+
+              setEntered(true);
+
+            }}
+          />
+
+        ) : (
 
           <Routes>
 
@@ -234,9 +174,7 @@ const AppContent = () => {
 
             <Route
               path="/admin"
-              element={
-                <AdminLogin />
-              }
+              element={<AdminLogin />}
             />
 
             {/* ================= DASHBOARD ================= */}
@@ -245,9 +183,7 @@ const AppContent = () => {
               path="/admin/dashboard"
               element={
                 <ProtectedRoute>
-
                   <Dashboard />
-
                 </ProtectedRoute>
               }
             />
@@ -257,18 +193,18 @@ const AppContent = () => {
             <Route
               path="*"
               element={
-                <div className="
-                  min-h-screen
-
-                  flex items-center
-                  justify-center
-
-                  bg-black
-                  text-yellow-400
-
-                  text-3xl
-                  font-bold
-                ">
+                <div
+                  className="
+                    min-h-screen
+                    flex
+                    items-center
+                    justify-center
+                    bg-black
+                    text-yellow-400
+                    text-3xl
+                    font-bold
+                  "
+                >
                   Page Not Found
                 </div>
               }
@@ -276,7 +212,7 @@ const AppContent = () => {
 
           </Routes>
 
-        </BrowserRouter>
+        )}
 
       </motion.div>
 
@@ -285,25 +221,31 @@ const AppContent = () => {
 };
 
 /* =========================================================
-   🔥 FINAL APP
+   FINAL APP
 ========================================================= */
 
 function App() {
 
   return (
-    <LanguageProvider>
 
-      <ModeProvider>
+    <BrowserRouter>
 
-        <RTLHandler>
+      <LanguageProvider>
 
-          <AppContent />
+        <ModeProvider>
 
-        </RTLHandler>
+          <RTLHandler>
 
-      </ModeProvider>
+            <AppContent />
 
-    </LanguageProvider>
+          </RTLHandler>
+
+        </ModeProvider>
+
+      </LanguageProvider>
+
+    </BrowserRouter>
+
   );
 }
 
