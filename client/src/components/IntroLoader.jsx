@@ -1,138 +1,110 @@
 import { motion } from "framer-motion";
 
 const IntroLoader = () => {
+
   return (
+
     <div
       className="
         fixed inset-0
-        bg-[#050505]
+
+        bg-[#030303]
+
         z-[9999]
+
+        overflow-hidden
 
         flex flex-col
         items-center
         justify-center
-
-        overflow-hidden
       "
     >
 
-      {/* ================= BACKGROUND ================= */}
+      {/* ================= CINEMATIC BG ================= */}
 
       <div className="
         absolute inset-0
-        bg-[radial-gradient(circle_at_center,rgba(255,215,0,0.08),transparent_60%)]
+
+        bg-[radial-gradient(circle_at_top,rgba(255,215,0,0.08),transparent_50%)]
+
+        opacity-80
       " />
-
-      {/* ================= FLOATING PARTICLES ================= */}
-
-      <div className="absolute inset-0 overflow-hidden">
-
-        <motion.div
-          animate={{
-            y: [0, -40, 0],
-            opacity: [0.3, 1, 0.3],
-          }}
-          transition={{
-            repeat: Infinity,
-            duration: 4,
-          }}
-          className="
-            absolute top-20 left-20
-            w-3 h-3 rounded-full
-            bg-yellow-400
-            blur-[1px]
-          "
-        />
-
-        <motion.div
-          animate={{
-            y: [0, -30, 0],
-            opacity: [0.2, 1, 0.2],
-          }}
-          transition={{
-            repeat: Infinity,
-            duration: 5,
-          }}
-          className="
-            absolute top-40 right-40
-            w-2 h-2 rounded-full
-            bg-yellow-300
-          "
-        />
-
-        <motion.div
-          animate={{
-            y: [0, -20, 0],
-          }}
-          transition={{
-            repeat: Infinity,
-            duration: 3,
-          }}
-          className="
-            absolute bottom-24 left-1/3
-            w-4 h-4 rounded-full
-            bg-yellow-500/60
-          "
-        />
-
-      </div>
 
       {/* ================= GOLD GLOW ================= */}
 
-      <div className="
-        absolute
-        w-[500px]
-        h-[500px]
+      <motion.div
 
-        bg-yellow-500/10
+        animate={{
+          scale: [1, 1.15, 1],
+          opacity: [0.4, 0.7, 0.4],
+        }}
 
-        blur-[140px]
+        transition={{
+          repeat: Infinity,
+          duration: 4,
+        }}
 
-        rounded-full
-      " />
+        className="
+          absolute
+
+          w-[700px]
+          h-[700px]
+
+          bg-yellow-500/10
+
+          blur-[180px]
+
+          rounded-full
+        "
+      />
+
+      {/* ================= DUST PARTICLES ================= */}
+
+      {[...Array(18)].map((_, i) => (
+
+        <motion.div
+          key={i}
+
+          animate={{
+            y: [0, -120],
+            opacity: [0, 1, 0],
+            x: [0, i % 2 === 0 ? 20 : -20],
+          }}
+
+          transition={{
+            repeat: Infinity,
+            duration: 3 + i * 0.2,
+            delay: i * 0.2,
+          }}
+
+          className="
+            absolute
+
+            w-2 h-2
+
+            rounded-full
+
+            bg-yellow-300/40
+          "
+
+          style={{
+            bottom: "20%",
+            left: `${10 + i * 5}%`,
+          }}
+        />
+
+      ))}
 
       {/* ================= CEILING ================= */}
 
       <motion.div
+
         initial={{
           width: 0,
         }}
 
         animate={{
-          width: 320,
-        }}
-
-        transition={{
-          duration: 1,
-        }}
-
-        className="
-          absolute top-28
-
-          h-5
-
-          bg-gradient-to-r
-          from-gray-400
-          via-white
-          to-gray-400
-
-          rounded-full
-
-          shadow-[0_0_40px_rgba(255,255,255,0.2)]
-        "
-      />
-
-      {/* ================= POP SHEET ================= */}
-
-      <motion.div
-        initial={{
-          scaleY: 0,
-          opacity: 0,
-        }}
-
-        animate={{
-          scaleY: 1,
-          opacity: 1,
+          width: "420px",
         }}
 
         transition={{
@@ -140,36 +112,78 @@ const IntroLoader = () => {
         }}
 
         className="
-          absolute top-32
+          absolute top-20
 
-          w-72 h-16
+          h-6
+
+          bg-gradient-to-r
+          from-gray-300
+          via-white
+          to-gray-300
+
+          rounded-full
+
+          shadow-[0_0_50px_rgba(255,255,255,0.2)]
+        "
+      />
+
+      {/* ================= POP SHEET ================= */}
+
+      <motion.div
+
+        initial={{
+          scaleY: 0,
+          opacity: 0,
+          y: -30,
+        }}
+
+        animate={{
+          scaleY: 1,
+          opacity: 1,
+          y: 0,
+        }}
+
+        transition={{
+          delay: 0.6,
+          duration: 1.4,
+        }}
+
+        className="
+          absolute top-[105px]
+
+          w-[360px]
+          h-[70px]
 
           bg-gradient-to-b
           from-white
-          to-gray-200
+          via-gray-100
+          to-gray-300
 
           rounded-md
 
           origin-top
 
-          shadow-[0_20px_60px_rgba(255,255,255,0.2)]
+          shadow-[0_30px_80px_rgba(255,255,255,0.25)]
         "
       />
 
       {/* ================= WORKER ================= */}
 
       <motion.div
+
         animate={{
-          y: [0, -12, 0],
+          y: [0, -10, 0],
         }}
 
         transition={{
           repeat: Infinity,
-          duration: 1.5,
+          duration: 1.6,
         }}
 
         className="
-          relative mt-28
+          relative
+
+          mt-40
 
           flex flex-col
           items-center
@@ -178,111 +192,142 @@ const IntroLoader = () => {
 
         {/* HELMET */}
 
-        <div className="
-          absolute -top-3
+        <motion.div
 
-          w-20 h-8
+          animate={{
+            rotate: [0, 2, -2, 0],
+          }}
 
-          bg-yellow-300
+          transition={{
+            repeat: Infinity,
+            duration: 2,
+          }}
 
-          rounded-full
+          className="
+            absolute -top-4
 
-          shadow-[0_0_20px_rgba(255,215,0,0.4)]
-        " />
+            w-24 h-10
+
+            bg-gradient-to-b
+            from-yellow-200
+            to-yellow-500
+
+            rounded-full
+
+            shadow-[0_0_30px_rgba(255,215,0,0.4)]
+          "
+        />
 
         {/* HEAD */}
 
         <div className="
-          w-16 h-16
+          w-20 h-20
 
           rounded-full
 
           bg-gradient-to-b
           from-yellow-500
-          to-yellow-600
+          to-yellow-700
 
-          border-4 border-yellow-300
+          border-[5px] border-yellow-300
         " />
 
         {/* BODY */}
 
         <div className="
-          w-24 h-36
+          relative
 
-          bg-gradient-to-b
-          from-yellow-400
-          to-yellow-500
-
-          rounded-3xl
+          w-32 h-44
 
           mt-2
 
-          shadow-[0_0_40px_rgba(255,215,0,0.2)]
-        " />
+          bg-gradient-to-b
+          from-yellow-400
+          to-yellow-600
 
-        {/* ARMS */}
+          rounded-[40px]
 
-        <div className="
-          flex justify-between
-
-          w-48
-
-          absolute top-10
+          shadow-[0_20px_60px_rgba(255,215,0,0.15)]
         ">
 
-          <motion.div
-            animate={{
-              rotate: [-25, 25, -25],
-            }}
+          {/* SAFETY STRIPE */}
 
-            transition={{
-              repeat: Infinity,
-              duration: 1,
-            }}
+          <div className="
+            absolute top-12 left-0
 
-            className="
-              w-6 h-28
+            w-full h-4
 
-              bg-gradient-to-b
-              from-yellow-300
-              to-yellow-500
-
-              rounded-full
-
-              origin-top
-            "
-          />
-
-          <motion.div
-            animate={{
-              rotate: [25, -25, 25],
-            }}
-
-            transition={{
-              repeat: Infinity,
-              duration: 1,
-            }}
-
-            className="
-              w-6 h-28
-
-              bg-gradient-to-b
-              from-yellow-300
-              to-yellow-500
-
-              rounded-full
-
-              origin-top
-            "
-          />
+            bg-black/20
+          " />
 
         </div>
+
+        {/* LEFT ARM */}
+
+        <motion.div
+
+          animate={{
+            rotate: [-35, 20, -35],
+          }}
+
+          transition={{
+            repeat: Infinity,
+            duration: 1.3,
+          }}
+
+          className="
+            absolute top-8 left-[-45px]
+
+            w-7 h-36
+
+            bg-gradient-to-b
+            from-yellow-300
+            to-yellow-500
+
+            rounded-full
+
+            origin-top
+
+            shadow-[0_0_20px_rgba(255,215,0,0.2)]
+          "
+        />
+
+        {/* RIGHT ARM */}
+
+        <motion.div
+
+          animate={{
+            rotate: [35, -20, 35],
+          }}
+
+          transition={{
+            repeat: Infinity,
+            duration: 1.3,
+          }}
+
+          className="
+            absolute top-8 right-[-45px]
+
+            w-7 h-36
+
+            bg-gradient-to-b
+            from-yellow-300
+            to-yellow-500
+
+            rounded-full
+
+            origin-top
+
+            shadow-[0_0_20px_rgba(255,215,0,0.2)]
+          "
+        />
 
       </motion.div>
 
       {/* ================= TITLE ================= */}
 
       <motion.h1
+
         initial={{
           opacity: 0,
           y: 40,
@@ -294,12 +339,12 @@ const IntroLoader = () => {
         }}
 
         transition={{
-          delay: 0.5,
+          delay: 1,
           duration: 1,
         }}
 
         className="
-          mt-20
+          mt-24
 
           text-yellow-400
 
@@ -307,17 +352,20 @@ const IntroLoader = () => {
 
           font-black
 
-          tracking-[12px]
+          tracking-[14px]
 
-          drop-shadow-[0_0_25px_rgba(255,215,0,0.5)]
+          drop-shadow-[0_0_30px_rgba(255,215,0,0.4)]
         "
       >
+
         AL ABRAZ
+
       </motion.h1>
 
       {/* ================= SUBTITLE ================= */}
 
       <motion.p
+
         initial={{
           opacity: 0,
         }}
@@ -327,59 +375,68 @@ const IntroLoader = () => {
         }}
 
         transition={{
-          delay: 1,
+          delay: 1.5,
         }}
 
         className="
-          text-gray-400
-
           mt-5
 
-          tracking-[6px]
+          text-gray-400
 
           uppercase
+
+          tracking-[8px]
 
           text-xs md:text-sm
         "
       >
-        Premium Ceiling Experience
+
+        Premium POP & Interior Experience
+
       </motion.p>
 
       {/* ================= LOADING BAR ================= */}
 
       <div className="
-        mt-10
+        relative
 
-        w-60 h-1
+        mt-12
 
-        bg-white/10
+        w-72 h-[5px]
 
         rounded-full
 
         overflow-hidden
+
+        bg-white/10
       ">
 
         <motion.div
+
           initial={{
-            x: "-100%",
+            width: 0,
           }}
 
           animate={{
-            x: "100%",
+            width: "100%",
           }}
 
           transition={{
-            repeat: Infinity,
-            duration: 1.5,
+            duration: 4,
+            ease: "easeInOut",
           }}
 
           className="
-            w-1/2 h-full
+            absolute left-0 top-0
+
+            h-full
 
             bg-gradient-to-r
-            from-transparent
-            via-yellow-400
-            to-transparent
+            from-yellow-300
+            via-yellow-500
+            to-yellow-300
+
+            shadow-[0_0_30px_rgba(255,215,0,0.5)]
           "
         />
 

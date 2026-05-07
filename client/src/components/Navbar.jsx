@@ -38,6 +38,29 @@ const Navbar = () => {
   const [scrolled, setScrolled] =
     useState(false);
 
+  /* ================= BODY LOCK ================= */
+
+  useEffect(() => {
+
+    if (menuOpen) {
+
+      document.body.style.overflow =
+        "hidden";
+
+    } else {
+
+      document.body.style.overflow =
+        "auto";
+    }
+
+    return () => {
+
+      document.body.style.overflow =
+        "auto";
+    };
+
+  }, [menuOpen]);
+
   /* ================= ADMIN ================= */
 
   useEffect(() => {
@@ -68,9 +91,37 @@ const Navbar = () => {
     );
 
     return () => {
+
       window.removeEventListener(
         "scroll",
         handleScroll
+      );
+    };
+
+  }, []);
+
+  /* ================= ESC CLOSE ================= */
+
+  useEffect(() => {
+
+    const handleEsc = (e) => {
+
+      if (e.key === "Escape") {
+
+        setMenuOpen(false);
+      }
+    };
+
+    window.addEventListener(
+      "keydown",
+      handleEsc
+    );
+
+    return () => {
+
+      window.removeEventListener(
+        "keydown",
+        handleEsc
       );
     };
 
@@ -105,6 +156,7 @@ const Navbar = () => {
   /* ================= TEXT ================= */
 
   const t = {
+
     home:
       lang === "ar"
         ? "الرئيسية"
@@ -164,8 +216,13 @@ const Navbar = () => {
   /* ================= CONTACT ================= */
 
   const contactNumbers = {
-    masna: "+96599575150",
-    contractor: "+96555807419",
+
+    masna:
+      "+96599575150",
+
+    contractor:
+      "+96555807419",
+
   };
 
   const phoneNumber =
@@ -176,6 +233,8 @@ const Navbar = () => {
 
   return (
     <>
+      {/* ================= NAVBAR ================= */}
+
       <motion.nav
 
         initial={{
@@ -197,22 +256,23 @@ const Navbar = () => {
 
           ${
             scrolled
+
               ? `
-                bg-black/70
-                backdrop-blur-2xl
+                bg-[#050505]/75
+
+                backdrop-blur-3xl
 
                 border-b border-yellow-500/10
 
-                shadow-[0_10px_40px_rgba(0,0,0,0.5)]
+                shadow-[0_10px_50px_rgba(0,0,0,0.55)]
               `
+
               : `
                 bg-transparent
               `
           }
         `}
       >
-
-        {/* ================= CONTAINER ================= */}
 
         <div className="
           max-w-[1600px]
@@ -227,79 +287,59 @@ const Navbar = () => {
           justify-between
         ">
 
-          {/* ================= PREMIUM CLASSIC LOGO ================= */}
+          {/* ================= LOGO ================= */}
 
-<motion.div
-  whileHover={{
-    scale: 1.02,
-  }}
+          <div
+            onClick={() =>
+              scrollTo("home")
+            }
 
-  transition={{
-    duration: 0.3,
-  }}
+            className="
+              cursor-pointer
 
-  onClick={() =>
-    scrollTo("home")
-  }
+              select-none
+            "
+          >
 
-  className="
-    cursor-pointer
+            <h1 className="
+              text-xl md:text-2xl
 
-    select-none
+              font-black
 
-    flex flex-col
-  "
->
+              tracking-[4px]
 
-  {/* TITLE */}
+              text-yellow-400
+            ">
 
-  <h1 className="
-    text-xl md:text-2xl
+              {mode === "masna"
 
-    font-black
+                ? "AL ABRAZ MASNA"
 
-    tracking-[4px]
+                : "AL ABRAZ CONTRACTOR"}
 
-    text-yellow-400
+            </h1>
 
-    leading-none
+            <p className="
+              text-[10px] md:text-xs
 
-    transition-all duration-300
-  ">
+              tracking-[3px]
 
-    {lang === "ar"
+              uppercase
 
-      ? mode === "masna"
-        ? "الابراز مصنع"
-        : "الابراز مقاول"
+              text-gray-400
 
-      : mode === "masna"
-        ? "AL-ABRAZ MASNA"
-        : "AL-ABRAZ CONTRACTOR"}
+              mt-1
+            ">
 
-  </h1>
+              {lang === "ar"
 
-  {/* SUBTITLE */}
+                ? "حلول داخلية فاخرة"
 
-  <p className="
-    text-[10px] md:text-xs
+                : "Premium Interior Solutions"}
 
-    tracking-[3px]
+            </p>
 
-    uppercase
-
-    text-gray-400
-
-    mt-2
-  ">
-
-    {lang === "ar"
-      ? "حلول داخلية فاخرة"
-      : "Premium Interior Solutions"}
-
-  </p>
-
-</motion.div>
+          </div>
 
           {/* ================= DESKTOP ================= */}
 
@@ -382,8 +422,6 @@ const Navbar = () => {
               {/* MODE */}
 
               <div className="
-                relative
-
                 flex
 
                 bg-white/5
@@ -393,78 +431,72 @@ const Navbar = () => {
                 rounded-full
 
                 p-1
-
-                backdrop-blur-xl
               ">
-
-                <motion.div
-                  animate={{
-                    x:
-                      mode ===
-                      "contractor"
-                        ? "100%"
-                        : "0%",
-                  }}
-
-                  transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 25,
-                  }}
-
-                  className="
-                    absolute top-1 left-1
-
-                    w-1/2 h-[calc(100%-8px)]
-
-                    bg-yellow-500
-
-                    rounded-full
-                  "
-                />
 
                 <button
                   onClick={() =>
-                    setMode(
-                      "masna"
-                    )
+                    setMode("masna")
                   }
 
-                  className="
-                    relative z-10
-
+                  className={`
                     px-5 py-2
+
+                    rounded-full
 
                     text-sm
 
-                    font-medium
+                    transition-all duration-300
 
-                    text-black
-                  "
+                    ${
+                      mode === "masna"
+
+                        ? `
+                          bg-yellow-500
+                          text-black
+                        `
+
+                        : `
+                          text-white
+                        `
+                    }
+                  `}
                 >
+
                   {t.masna}
+
                 </button>
 
                 <button
                   onClick={() =>
-                    setMode(
-                      "contractor"
-                    )
+                    setMode("contractor")
                   }
 
-                  className="
-                    relative z-10
-
+                  className={`
                     px-5 py-2
+
+                    rounded-full
 
                     text-sm
 
-                    font-medium
+                    transition-all duration-300
 
-                    text-black
-                  "
+                    ${
+                      mode === "contractor"
+
+                        ? `
+                          bg-yellow-500
+                          text-black
+                        `
+
+                        : `
+                          text-white
+                        `
+                    }
+                  `}
                 >
+
                   {t.contractor}
+
                 </button>
 
               </div>
@@ -472,8 +504,6 @@ const Navbar = () => {
               {/* LANG */}
 
               <div className="
-                relative
-
                 flex
 
                 bg-white/5
@@ -485,49 +515,39 @@ const Navbar = () => {
                 p-1
               ">
 
-                <motion.div
-                  animate={{
-                    x:
-                      lang === "ar"
-                        ? "100%"
-                        : "0%",
-                  }}
-
-                  transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 25,
-                  }}
-
-                  className="
-                    absolute top-1 left-1
-
-                    w-1/2 h-[calc(100%-8px)]
-
-                    bg-white
-
-                    rounded-full
-                  "
-                />
-
                 <button
                   onClick={() =>
                     setLang("en")
                   }
 
-                  className="
-                    relative z-10
-
+                  className={`
                     px-4 py-2
+
+                    rounded-full
 
                     text-xs
 
                     font-bold
 
-                    text-black
-                  "
+                    transition-all duration-300
+
+                    ${
+                      lang === "en"
+
+                        ? `
+                          bg-white
+                          text-black
+                        `
+
+                        : `
+                          text-white
+                        `
+                    }
+                  `}
                 >
+
                   EN
+
                 </button>
 
                 <button
@@ -535,167 +555,37 @@ const Navbar = () => {
                     setLang("ar")
                   }
 
-                  className="
-                    relative z-10
-
+                  className={`
                     px-4 py-2
+
+                    rounded-full
 
                     text-xs
 
                     font-bold
 
-                    text-black
-                  "
+                    transition-all duration-300
+
+                    ${
+                      lang === "ar"
+
+                        ? `
+                          bg-white
+                          text-black
+                        `
+
+                        : `
+                          text-white
+                        `
+                    }
+                  `}
                 >
+
                   AR
+
                 </button>
 
               </div>
-
-              {/* PHONE */}
-
-              <motion.a
-                whileHover={{
-                  scale: 1.03,
-                }}
-
-                href={`tel:${phoneNumber}`}
-
-                className="
-                  hidden 2xl:flex
-
-                  items-center
-
-                  gap-2
-
-                  bg-yellow-500
-
-                  text-black
-
-                  px-5 py-3
-
-                  rounded-full
-
-                  font-semibold
-
-                  shadow-[0_0_30px_rgba(255,215,0,0.2)]
-                "
-              >
-
-                <FaPhone />
-
-                {phoneNumber}
-
-              </motion.a>
-
-              {/* WHATSAPP */}
-
-              <motion.a
-                whileHover={{
-                  scale: 1.05,
-                }}
-
-                href={whatsappLink}
-
-                target="_blank"
-
-                className="
-                  flex items-center
-                  justify-center
-
-                  w-12 h-12
-
-                  rounded-full
-
-                  bg-green-500
-
-                  text-white
-
-                  shadow-[0_0_30px_rgba(34,197,94,0.3)]
-                "
-              >
-
-                <FaWhatsapp />
-
-              </motion.a>
-
-              {/* ADMIN */}
-
-              {isAdmin ? (
-
-                <div className="
-                  flex items-center
-
-                  gap-3
-                ">
-
-                  <button
-                    onClick={() =>
-                      navigate(
-                        "/admin/dashboard"
-                      )
-                    }
-
-                    className="
-                      px-5 py-2
-
-                      rounded-full
-
-                      bg-white/5
-
-                      border border-white/10
-
-                      hover:border-yellow-400/30
-
-                      transition-all duration-300
-                    "
-                  >
-                    {t.dashboard}
-                  </button>
-
-                  <button
-                    onClick={
-                      handleLogout
-                    }
-
-                    className="
-                      text-red-400
-
-                      hover:text-red-300
-
-                      transition
-                    "
-                  >
-                    {t.logout}
-                  </button>
-
-                </div>
-
-              ) : (
-
-                <button
-                  onClick={() =>
-                    navigate("/admin")
-                  }
-
-                  className="
-                    px-5 py-2
-
-                    rounded-full
-
-                    border border-yellow-500/20
-
-                    hover:bg-yellow-500
-
-                    hover:text-black
-
-                    transition-all duration-300
-                  "
-                >
-                  {t.login}
-                </button>
-
-              )}
 
             </div>
 
@@ -703,10 +593,7 @@ const Navbar = () => {
 
           {/* ================= MOBILE BUTTON ================= */}
 
-          <motion.button
-            whileTap={{
-              scale: 0.95,
-            }}
+          <button
 
             onClick={() =>
               setMenuOpen(
@@ -725,7 +612,7 @@ const Navbar = () => {
 
               bg-white/5
 
-              border border-white/10
+              border border-yellow-500/10
 
               backdrop-blur-xl
 
@@ -798,7 +685,7 @@ const Navbar = () => {
               "
             />
 
-          </motion.button>
+          </button>
 
         </div>
 
@@ -835,7 +722,7 @@ const Navbar = () => {
 
                 bg-black/70
 
-                backdrop-blur-sm
+                backdrop-blur-md
 
                 z-40
               "
@@ -884,113 +771,201 @@ const Navbar = () => {
 
                 bg-[#050505]/95
 
-                backdrop-blur-3xl
+                backdrop-blur-2xl
 
                 border-r border-yellow-500/10
 
                 z-50
 
-                p-6
-
                 flex flex-col
               `}
             >
 
-              {/* LOGO */}
+              {/* ================= SCROLL AREA ================= */}
 
               <div className="
-                mb-10
+                flex-1
+
+                overflow-y-auto
+
+                px-6 py-8
               ">
 
-                <h1 className="
-                  text-3xl
-
-                  font-black
-
-                  text-yellow-400
-                ">
-                  AL ABRAZ
-                </h1>
-
-                <p className="
-                  text-gray-400
-
-                  text-sm
-
-                  mt-2
-                ">
-                  Premium Experience
-                </p>
-
-              </div>
-
-              {/* LINKS */}
-
-              <div className="
-                flex flex-col
-
-                gap-3
-              ">
-
-                {[
-                  ["home", t.home],
-                  ["about", t.about],
-                  ["services", t.services],
-                  ["gallery", t.gallery],
-                  ["contact", t.contact],
-                ].map(([id, label]) => (
-
-                  <button
-                    key={id}
-
-                    onClick={() =>
-                      scrollTo(id)
-                    }
-
-                    className="
-                      text-left
-
-                      text-lg
-
-                      px-5 py-4
-
-                      rounded-2xl
-
-                      bg-white/5
-
-                      border border-white/5
-
-                      hover:border-yellow-400/20
-
-                      hover:bg-yellow-500/10
-
-                      transition-all duration-300
-                    "
-                  >
-                    {label}
-                  </button>
-
-                ))}
-
-              </div>
-
-              {/* MODE */}
-
-              <div className="
-                mt-8
-              ">
-
-                <p className="
-                  text-sm
-
-                  text-gray-400
-
-                  mb-3
-                ">
-                  Experience
-                </p>
+                {/* LOGO */}
 
                 <div className="
+                  mb-10
+                ">
+
+                  <h1 className="
+                    text-3xl
+
+                    font-black
+
+                    text-yellow-400
+                  ">
+
+                    {mode === "masna"
+
+                      ? "AL ABRAZ MASNA"
+
+                      : "AL ABRAZ CONTRACTOR"}
+
+                  </h1>
+
+                  <p className="
+                    text-gray-400
+
+                    text-sm
+
+                    mt-2
+                  ">
+
+                    {lang === "ar"
+
+                      ? "حلول داخلية فاخرة"
+
+                      : "Premium Interior Solutions"}
+
+                  </p>
+
+                </div>
+
+                {/* NAV LINKS */}
+
+                <div className="
+                  flex flex-col
+
+                  gap-3
+                ">
+
+                  {[
+                    ["home", t.home],
+                    ["about", t.about],
+                    ["services", t.services],
+                    ["gallery", t.gallery],
+                    ["contact", t.contact],
+                  ].map(([id, label]) => (
+
+                    <button
+                      key={id}
+
+                      onClick={() =>
+                        scrollTo(id)
+                      }
+
+                      className="
+                        text-left
+
+                        text-lg
+
+                        px-5 py-4
+
+                        rounded-2xl
+
+                        bg-white/5
+
+                        border border-white/5
+
+                        hover:border-yellow-400/20
+
+                        hover:bg-yellow-500/10
+
+                        transition-all duration-300
+                      "
+                    >
+
+                      {label}
+
+                    </button>
+
+                  ))}
+
+                </div>
+
+                {/* MODE */}
+
+                <div className="
+                  mt-8
+                ">
+
+                  <div className="
+                    grid grid-cols-2
+
+                    gap-3
+                  ">
+
+                    <button
+                      onClick={() =>
+                        setMode("masna")
+                      }
+
+                      className={`
+                        py-4
+
+                        rounded-2xl
+
+                        transition-all duration-300
+
+                        ${
+                          mode === "masna"
+
+                            ? `
+                              bg-yellow-500
+                              text-black
+                            `
+
+                            : `
+                              bg-white/5
+                            `
+                        }
+                      `}
+                    >
+
+                      {t.masna}
+
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        setMode("contractor")
+                      }
+
+                      className={`
+                        py-4
+
+                        rounded-2xl
+
+                        transition-all duration-300
+
+                        ${
+                          mode === "contractor"
+
+                            ? `
+                              bg-yellow-500
+                              text-black
+                            `
+
+                            : `
+                              bg-white/5
+                            `
+                        }
+                      `}
+                    >
+
+                      {t.contractor}
+
+                    </button>
+
+                  </div>
+
+                </div>
+
+                {/* LANG */}
+
+                <div className="
+                  mt-6
+
                   grid grid-cols-2
 
                   gap-3
@@ -998,9 +973,7 @@ const Navbar = () => {
 
                   <button
                     onClick={() =>
-                      setMode(
-                        "masna"
-                      )
+                      setLang("en")
                     }
 
                     className={`
@@ -1011,26 +984,27 @@ const Navbar = () => {
                       transition-all duration-300
 
                       ${
-                        mode ===
-                        "masna"
+                        lang === "en"
+
                           ? `
-                            bg-yellow-500
+                            bg-white
                             text-black
                           `
+
                           : `
                             bg-white/5
                           `
                       }
                     `}
                   >
-                    {t.masna}
+
+                    EN
+
                   </button>
 
                   <button
                     onClick={() =>
-                      setMode(
-                        "contractor"
-                      )
+                      setLang("ar")
                     }
 
                     className={`
@@ -1041,100 +1015,41 @@ const Navbar = () => {
                       transition-all duration-300
 
                       ${
-                        mode ===
-                        "contractor"
+                        lang === "ar"
+
                           ? `
-                            bg-yellow-500
+                            bg-white
                             text-black
                           `
+
                           : `
                             bg-white/5
                           `
                       }
                     `}
                   >
-                    {t.contractor}
+
+                    AR
+
                   </button>
 
                 </div>
 
               </div>
 
-              {/* LANG */}
+              {/* ================= BOTTOM ================= */}
 
               <div className="
-                mt-6
+                border-t border-yellow-500/10
 
-                grid grid-cols-2
-
-                gap-3
-              ">
-
-                <button
-                  onClick={() =>
-                    setLang("en")
-                  }
-
-                  className={`
-                    py-4
-
-                    rounded-2xl
-
-                    transition-all duration-300
-
-                    ${
-                      lang === "en"
-                        ? `
-                          bg-white
-                          text-black
-                        `
-                        : `
-                          bg-white/5
-                        `
-                    }
-                  `}
-                >
-                  EN
-                </button>
-
-                <button
-                  onClick={() =>
-                    setLang("ar")
-                  }
-
-                  className={`
-                    py-4
-
-                    rounded-2xl
-
-                    transition-all duration-300
-
-                    ${
-                      lang === "ar"
-                        ? `
-                          bg-white
-                          text-black
-                        `
-                        : `
-                          bg-white/5
-                        `
-                    }
-                  `}
-                >
-                  AR
-                </button>
-
-              </div>
-
-              {/* CONTACT */}
-
-              <div className="
-                mt-auto
+                p-6
 
                 flex flex-col
 
                 gap-4
               ">
+
+                {/* PHONE */}
 
                 <a
                   href={`tel:${phoneNumber}`}
@@ -1163,6 +1078,8 @@ const Navbar = () => {
 
                 </a>
 
+                {/* WHATSAPP */}
+
                 <a
                   href={whatsappLink}
 
@@ -1190,7 +1107,7 @@ const Navbar = () => {
 
                 </a>
 
-                {/* ADMIN */}
+                {/* LOGIN / DASHBOARD */}
 
                 {isAdmin ? (
 
@@ -1219,7 +1136,9 @@ const Navbar = () => {
                         bg-white/5
                       "
                     >
+
                       {t.dashboard}
+
                     </button>
 
                     <button
@@ -1237,7 +1156,9 @@ const Navbar = () => {
                         text-red-400
                       "
                     >
+
                       {t.logout}
+
                     </button>
 
                   </div>
@@ -1267,7 +1188,9 @@ const Navbar = () => {
                       transition-all duration-300
                     "
                   >
+
                     {t.login}
+
                   </button>
 
                 )}
@@ -1277,7 +1200,6 @@ const Navbar = () => {
             </motion.div>
 
           </>
-
         )}
 
       </AnimatePresence>

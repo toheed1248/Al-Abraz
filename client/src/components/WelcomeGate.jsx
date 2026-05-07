@@ -8,9 +8,16 @@ import {
   useMode,
 } from "../context/ModeContext";
 
+import {
+  useNavigate,
+} from "react-router-dom";
+
 const WelcomeGate = ({
   onEnter,
 }) => {
+
+  const navigate =
+    useNavigate();
 
   const { lang, setLang } =
     useLang();
@@ -18,146 +25,237 @@ const WelcomeGate = ({
   const { mode, setMode } =
     useMode();
 
+  /* ================= ENTER ================= */
+
   const handleEnter = () => {
 
+    const now =
+      Date.now();
+
     localStorage.setItem(
-      "entered",
-      "true"
+      "welcome_expire",
+      now + 24 * 60 * 60 * 1000
     );
 
     onEnter();
   };
 
+  /* ================= TEXT ================= */
+
+  const content = {
+
+    en: {
+
+      title:
+        "AL ABRAZ",
+
+      subtitle:
+        "Luxury POP & Interior Execution In Kuwait",
+
+      owner:
+        "Direct Consultation With Tarique Solanki",
+
+      exp:
+        "10+ Years Offline Experience In Kuwait",
+
+      desc:
+        "Professional POP ceiling, gypsum design, wall moulding and luxury interior execution with trusted offline experience.",
+
+      modeTitle:
+        "Choose Your Experience",
+
+      masnaTitle:
+        "Masna Experience",
+
+      masnaDesc:
+        "If you want to explore POP factory work, gypsum designs, moulding concepts and custom farma work, choose Masna.",
+
+      contractorTitle:
+        "Contractor Experience",
+
+      contractorDesc:
+        "If you want complete execution, ceiling installation, villa interior work and custom design creation through our masna production, choose Contractor.",
+
+      langTitle:
+        "Choose Language",
+
+      enter:
+        "Enter Experience",
+
+      admin:
+        "Admin Dashboard",
+
+      trust1:
+        "Trusted Kuwait Work",
+
+      trust2:
+        "Contract Based Service",
+
+      trust3:
+        "Luxury Interior Finishing",
+
+    },
+
+    ar: {
+
+      title:
+        "الابراز",
+
+      subtitle:
+        "تنفيذ ديكورات وأسقف فاخرة في الكويت",
+
+      owner:
+        "استشارة مباشرة مع طارق سولانكي",
+
+      exp:
+        "أكثر من 10 سنوات خبرة في الكويت",
+
+      desc:
+        "تنفيذ احترافي للأسقف الجبسية والديكورات الداخلية والتشطيبات الفاخرة بخبرة حقيقية داخل الكويت.",
+
+      modeTitle:
+        "اختر التجربة المناسبة",
+
+      masnaTitle:
+        "قسم المصنع",
+
+      masnaDesc:
+        "إذا كنت تريد مشاهدة أعمال الجبس والتصاميم والقوالب والزخارف الخاصة بالمصنع اختر المصنع.",
+
+      contractorTitle:
+        "قسم المقاولات",
+
+      contractorDesc:
+        "إذا كنت تريد تنفيذ كامل للمشاريع والديكور الداخلي والأسقف والإضاءة والتصاميم الخاصة اختر المقاولات.",
+
+      langTitle:
+        "اختر اللغة",
+
+      enter:
+        "دخول التجربة",
+
+      admin:
+        "لوحة التحكم",
+
+      trust1:
+        "خبرة موثوقة في الكويت",
+
+      trust2:
+        "تنفيذ بعقود رسمية",
+
+      trust3:
+        "تشطيبات داخلية فاخرة",
+    },
+  };
+
+  const t =
+    content[lang];
+
   return (
     <div className="
+      relative
+
       min-h-screen
 
       bg-[#050505]
 
-      text-white
+      overflow-hidden
 
       flex items-center
       justify-center
 
-      px-4
+      px-4 py-10
 
-      overflow-hidden
-
-      relative
+      text-white
     ">
 
-      {/* ================= BG EFFECTS ================= */}
+      {/* ================= CINEMATIC BG ================= */}
 
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="
+        absolute inset-0
+      ">
 
-        {/* GLOW 1 */}
+        {/* GOLD LIGHT */}
 
         <motion.div
+
           animate={{
             scale: [1, 1.1, 1],
+            opacity: [0.5, 0.8, 0.5],
           }}
 
           transition={{
             repeat: Infinity,
-            duration: 6,
+            duration: 8,
           }}
 
           className="
             absolute
 
-            top-10 left-10
-
-            w-[400px]
-            h-[400px]
-
-            bg-yellow-500/10
-
-            rounded-full
-
-            blur-[120px]
-          "
-        />
-
-        {/* GLOW 2 */}
-
-        <motion.div
-          animate={{
-            scale: [1, 1.15, 1],
-          }}
-
-          transition={{
-            repeat: Infinity,
-            duration: 7,
-          }}
-
-          className="
-            absolute
-
-            bottom-10 right-10
+            -top-20 left-[-100px]
 
             w-[500px]
             h-[500px]
 
+            rounded-full
+
+            bg-yellow-500/10
+
+            blur-[140px]
+          "
+        />
+
+        {/* GLOW */}
+
+        <motion.div
+
+          animate={{
+            scale: [1, 1.2, 1],
+          }}
+
+          transition={{
+            repeat: Infinity,
+            duration: 10,
+          }}
+
+          className="
+            absolute
+
+            bottom-[-100px]
+            right-[-100px]
+
+            w-[600px]
+            h-[600px]
+
+            rounded-full
+
             bg-yellow-400/10
 
-            rounded-full
-
-            blur-[150px]
+            blur-[180px]
           "
         />
 
-        {/* PARTICLES */}
+        {/* GRID */}
 
-        <motion.div
-          animate={{
-            y: [0, -30, 0],
-          }}
+        <div className="
+          absolute inset-0
 
-          transition={{
-            repeat: Infinity,
-            duration: 4,
-          }}
+          opacity-[0.03]
 
-          className="
-            absolute top-20 left-1/4
+          bg-[linear-gradient(rgba(255,255,255,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.2)_1px,transparent_1px)]
 
-            w-3 h-3
-
-            rounded-full
-
-            bg-yellow-400
-          "
-        />
-
-        <motion.div
-          animate={{
-            y: [0, -20, 0],
-          }}
-
-          transition={{
-            repeat: Infinity,
-            duration: 5,
-          }}
-
-          className="
-            absolute bottom-20 right-1/4
-
-            w-2 h-2
-
-            rounded-full
-
-            bg-yellow-300
-          "
-        />
+          bg-[size:60px_60px]
+        " />
 
       </div>
 
       {/* ================= MAIN CARD ================= */}
 
       <motion.div
+
         initial={{
           opacity: 0,
-          y: 50,
+          y: 40,
         }}
 
         animate={{
@@ -173,392 +271,624 @@ const WelcomeGate = ({
           relative z-10
 
           w-full
-          max-w-3xl
+          max-w-6xl
 
           rounded-[40px]
 
-          border
-          border-yellow-500/20
+          border border-yellow-500/10
 
           bg-gradient-to-b
-          from-white/10
-          to-white/5
+          from-white/[0.08]
+          to-white/[0.03]
 
-          backdrop-blur-3xl
+          backdrop-blur-[30px]
 
-          p-8 md:p-14
-
-          shadow-[0_0_80px_rgba(255,215,0,0.08)]
+          shadow-[0_0_100px_rgba(255,215,0,0.06)]
 
           overflow-hidden
         "
       >
 
-        {/* CARD SHINE */}
+        {/* TOP LINE */}
 
         <div className="
-          absolute inset-0
+          h-[3px]
 
-          bg-gradient-to-br
-          from-white/5
-          via-transparent
+          bg-gradient-to-r
+          from-transparent
+          via-yellow-400
           to-transparent
-
-          pointer-events-none
         " />
 
-        {/* ================= TITLE ================= */}
-
         <div className="
-          text-center mb-14
+          p-6 md:p-14
         ">
 
-          <motion.h1
-            initial={{
-              opacity: 0,
-              y: 40,
-            }}
+          {/* ================= TOP ================= */}
 
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
+          <div className="
+            flex flex-col
+            lg:flex-row
 
-            transition={{
-              duration: 1,
-            }}
+            items-start
+            justify-between
 
-            className="
-              text-5xl md:text-7xl
+            gap-10
+          ">
 
-              font-black
+            {/* LEFT */}
+
+            <div className="
+              flex-1
+            ">
+
+              {/* LOGO */}
+
+              <motion.h1
+
+                initial={{
+                  opacity: 0,
+                  y: 30,
+                }}
+
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+
+                transition={{
+                  duration: 1,
+                }}
+
+                className="
+                  text-5xl md:text-7xl
+
+                  font-black
+
+                  tracking-[10px]
+
+                  text-yellow-400
+
+                  drop-shadow-[0_0_30px_rgba(255,215,0,0.3)]
+                "
+              >
+
+                {t.title}
+
+              </motion.h1>
+
+              {/* SUB */}
+
+              <p className="
+                mt-5
+
+                text-gray-300
+
+                text-lg md:text-xl
+
+                leading-relaxed
+
+                max-w-2xl
+              ">
+
+                {t.subtitle}
+
+              </p>
+
+              {/* OWNER */}
+
+              <div className="
+                mt-8
+
+                flex flex-wrap
+
+                gap-4
+              ">
+
+                <div className="
+                  px-5 py-3
+
+                  rounded-2xl
+
+                  bg-white/5
+
+                  border border-yellow-500/10
+                ">
+
+                  <p className="
+                    text-yellow-400
+
+                    text-sm
+
+                    font-semibold
+                  ">
+                    {t.owner}
+                  </p>
+
+                </div>
+
+                <div className="
+                  px-5 py-3
+
+                  rounded-2xl
+
+                  bg-white/5
+
+                  border border-yellow-500/10
+                ">
+
+                  <p className="
+                    text-yellow-400
+
+                    text-sm
+
+                    font-semibold
+                  ">
+                    {t.exp}
+                  </p>
+
+                </div>
+
+              </div>
+
+              {/* DESCRIPTION */}
+
+              <p className="
+                mt-8
+
+                text-gray-400
+
+                leading-relaxed
+
+                max-w-3xl
+              ">
+
+                {t.desc}
+
+              </p>
+
+              {/* TRUST */}
+
+              <div className="
+                mt-10
+
+                grid md:grid-cols-3
+
+                gap-4
+              ">
+
+                {[
+
+                  t.trust1,
+                  t.trust2,
+                  t.trust3,
+
+                ].map((item, i) => (
+
+                  <div
+                    key={i}
+
+                    className="
+                      bg-white/[0.03]
+
+                      border border-white/5
+
+                      rounded-2xl
+
+                      px-5 py-4
+
+                      text-sm
+
+                      text-gray-300
+                    "
+                  >
+
+                    ✦ {item}
+
+                  </div>
+
+                ))}
+
+              </div>
+
+            </div>
+
+            {/* RIGHT */}
+
+            <div className="
+              w-full
+              lg:w-[340px]
+            ">
+
+              {/* LANGUAGE */}
+
+              <div className="
+                bg-white/[0.03]
+
+                border border-yellow-500/10
+
+                rounded-3xl
+
+                p-5
+              ">
+
+                <h2 className="
+                  text-lg
+
+                  font-semibold
+
+                  text-yellow-400
+
+                  mb-5
+                ">
+
+                  {t.langTitle}
+
+                </h2>
+
+                <div className="
+                  grid grid-cols-2
+
+                  gap-3
+                ">
+
+                  <button
+                    onClick={() =>
+                      setLang("en")
+                    }
+
+                    className={`
+                      py-4
+
+                      rounded-2xl
+
+                      font-semibold
+
+                      transition-all duration-300
+
+                      ${
+                        lang === "en"
+
+                          ? `
+                            bg-yellow-500
+                            text-black
+                          `
+
+                          : `
+                            bg-white/5
+                            border border-white/10
+                          `
+                      }
+                    `}
+                  >
+
+                    English
+
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      setLang("ar")
+                    }
+
+                    className={`
+                      py-4
+
+                      rounded-2xl
+
+                      font-semibold
+
+                      transition-all duration-300
+
+                      ${
+                        lang === "ar"
+
+                          ? `
+                            bg-yellow-500
+                            text-black
+                          `
+
+                          : `
+                            bg-white/5
+                            border border-white/10
+                          `
+                      }
+                    `}
+                  >
+
+                    العربية
+
+                  </button>
+
+                </div>
+
+              </div>
+
+              {/* ADMIN */}
+
+              <button
+
+                onClick={() =>
+                  navigate("/admin")
+                }
+
+                className="
+                  mt-5
+
+                  w-full
+
+                  py-4
+
+                  rounded-2xl
+
+                  bg-white/5
+
+                  border border-white/10
+
+                  hover:border-yellow-500/30
+
+                  transition-all duration-300
+                "
+              >
+
+                {t.admin}
+
+              </button>
+
+            </div>
+
+          </div>
+
+          {/* ================= EXPERIENCE ================= */}
+
+          <div className="
+            mt-16
+          ">
+
+            <h2 className="
+              text-3xl
+
+              font-bold
 
               text-yellow-400
 
-              mb-5
+              mb-8
+            ">
 
-              tracking-[12px]
+              {t.modeTitle}
 
-              drop-shadow-[0_0_25px_rgba(255,215,0,0.5)]
+            </h2>
+
+            <div className="
+              grid lg:grid-cols-2
+
+              gap-6
+            ">
+
+              {/* MASNA */}
+
+              <motion.button
+
+                whileHover={{
+                  y: -8,
+                }}
+
+                onClick={() =>
+                  setMode("masna")
+                }
+
+                className={`
+                  relative
+
+                  overflow-hidden
+
+                  rounded-[32px]
+
+                  border
+
+                  p-8 md:p-10
+
+                  text-left
+
+                  transition-all duration-500
+
+                  ${
+                    mode === "masna"
+
+                      ? `
+                        bg-yellow-500
+                        text-black
+
+                        border-yellow-300
+
+                        shadow-[0_0_50px_rgba(255,215,0,0.18)]
+                      `
+
+                      : `
+                        bg-white/[0.04]
+
+                        border-white/10
+
+                        hover:border-yellow-500/30
+                      `
+                  }
+                `}
+              >
+
+                <div className="
+                  absolute top-0 right-0
+
+                  w-40 h-40
+
+                  bg-white/10
+
+                  rounded-full
+
+                  blur-[70px]
+                " />
+
+                <h3 className="
+                  text-3xl
+
+                  font-black
+
+                  mb-5
+                ">
+
+                  MASNA
+
+                </h3>
+
+                <p className="
+                  leading-relaxed
+
+                  text-sm md:text-base
+
+                  opacity-90
+                ">
+
+                  {t.masnaDesc}
+
+                </p>
+
+              </motion.button>
+
+              {/* CONTRACTOR */}
+
+              <motion.button
+
+                whileHover={{
+                  y: -8,
+                }}
+
+                onClick={() =>
+                  setMode("contractor")
+                }
+
+                className={`
+                  relative
+
+                  overflow-hidden
+
+                  rounded-[32px]
+
+                  border
+
+                  p-8 md:p-10
+
+                  text-left
+
+                  transition-all duration-500
+
+                  ${
+                    mode === "contractor"
+
+                      ? `
+                        bg-yellow-500
+                        text-black
+
+                        border-yellow-300
+
+                        shadow-[0_0_50px_rgba(255,215,0,0.18)]
+                      `
+
+                      : `
+                        bg-white/[0.04]
+
+                        border-white/10
+
+                        hover:border-yellow-500/30
+                      `
+                  }
+                `}
+              >
+
+                <div className="
+                  absolute top-0 right-0
+
+                  w-40 h-40
+
+                  bg-white/10
+
+                  rounded-full
+
+                  blur-[70px]
+                " />
+
+                <h3 className="
+                  text-3xl
+
+                  font-black
+
+                  mb-5
+                ">
+
+                  CONTRACTOR
+
+                </h3>
+
+                <p className="
+                  leading-relaxed
+
+                  text-sm md:text-base
+
+                  opacity-90
+                ">
+
+                  {t.contractorDesc}
+
+                </p>
+
+              </motion.button>
+
+            </div>
+
+          </div>
+
+          {/* ================= ENTER ================= */}
+
+          <motion.button
+
+            whileHover={{
+              scale: 1.01,
+            }}
+
+            whileTap={{
+              scale: 0.98,
+            }}
+
+            onClick={handleEnter}
+
+            className="
+              mt-14
+
+              w-full
+
+              py-6
+
+              rounded-[28px]
+
+              bg-yellow-500
+
+              hover:bg-yellow-400
+
+              text-black
+
+              font-black
+
+              text-xl
+
+              shadow-[0_0_60px_rgba(255,215,0,0.2)]
+
+              transition-all duration-300
             "
           >
-            AL ABRAZ
-          </motion.h1>
 
-          <p className="
-            text-gray-400
+            {t.enter} →
 
-            leading-relaxed
-
-            max-w-xl
-
-            mx-auto
-          ">
-            {lang === "ar"
-              ? "اختر اللغة والخدمة المفضلة لديك لتجربة فاخرة"
-              : "Choose your preferred experience and language for a premium journey"}
-          </p>
+          </motion.button>
 
         </div>
-
-        {/* ================= MODE ================= */}
-
-        <div className="
-          mb-12
-        ">
-
-          <h2 className="
-            text-yellow-400
-
-            text-xl font-semibold
-
-            mb-6
-          ">
-            {lang === "ar"
-              ? "ماذا تريد أن ترى؟"
-              : "What do you want to explore?"}
-          </h2>
-
-          <div className="
-            grid md:grid-cols-2
-            gap-6
-          ">
-
-            {/* MASNA */}
-
-            <motion.button
-              whileHover={{
-                y: -8,
-                scale: 1.03,
-              }}
-
-              onClick={() =>
-                setMode("masna")
-              }
-
-              className={`
-                relative overflow-hidden
-
-                p-8 rounded-3xl
-
-                border
-
-                transition-all duration-500
-
-                ${
-                  mode === "masna"
-                    ? "bg-yellow-500 text-black border-yellow-400 shadow-[0_0_40px_rgba(255,215,0,0.2)]"
-                    : "bg-white/5 border-white/10 hover:border-yellow-500/40"
-                }
-              `}
-            >
-
-              {/* SHINE */}
-
-              <div className="
-                absolute inset-0
-
-                bg-gradient-to-r
-                from-transparent
-                via-white/10
-                to-transparent
-
-                -translate-x-full
-                hover:translate-x-full
-
-                transition duration-1000
-              " />
-
-              <h3 className="
-                text-3xl font-bold mb-3
-              ">
-                Masna
-              </h3>
-
-              <p className="
-                text-sm opacity-80
-              ">
-                POP ceiling & factory showcase
-              </p>
-
-            </motion.button>
-
-            {/* CONTRACTOR */}
-
-            <motion.button
-              whileHover={{
-                y: -8,
-                scale: 1.03,
-              }}
-
-              onClick={() =>
-                setMode(
-                  "contractor"
-                )
-              }
-
-              className={`
-                relative overflow-hidden
-
-                p-8 rounded-3xl
-
-                border
-
-                transition-all duration-500
-
-                ${
-                  mode ===
-                  "contractor"
-                    ? "bg-yellow-500 text-black border-yellow-400 shadow-[0_0_40px_rgba(255,215,0,0.2)]"
-                    : "bg-white/5 border-white/10 hover:border-yellow-500/40"
-                }
-              `}
-            >
-
-              <div className="
-                absolute inset-0
-
-                bg-gradient-to-r
-                from-transparent
-                via-white/10
-                to-transparent
-
-                -translate-x-full
-                hover:translate-x-full
-
-                transition duration-1000
-              " />
-
-              <h3 className="
-                text-3xl font-bold mb-3
-              ">
-                Contractor
-              </h3>
-
-              <p className="
-                text-sm opacity-80
-              ">
-                Interior & execution projects
-              </p>
-
-            </motion.button>
-
-          </div>
-
-        </div>
-
-        {/* ================= LANGUAGE ================= */}
-
-        <div className="
-          mb-14
-        ">
-
-          <h2 className="
-            text-yellow-400
-
-            text-xl font-semibold
-
-            mb-6
-          ">
-            {lang === "ar"
-              ? "اختر اللغة"
-              : "Choose Language"}
-          </h2>
-
-          <div className="
-            flex gap-5
-          ">
-
-            {/* ENGLISH */}
-
-            <motion.button
-              whileHover={{
-                scale: 1.03,
-              }}
-
-              onClick={() =>
-                setLang("en")
-              }
-
-              className={`
-                flex-1
-
-                py-5
-
-                rounded-2xl
-
-                font-bold
-
-                transition-all duration-300
-
-                ${
-                  lang === "en"
-                    ? "bg-yellow-500 text-black shadow-[0_0_40px_rgba(255,215,0,0.2)]"
-                    : "bg-white/5 border border-white/10 hover:border-yellow-500/30"
-                }
-              `}
-            >
-              English
-            </motion.button>
-
-            {/* ARABIC */}
-
-            <motion.button
-              whileHover={{
-                scale: 1.03,
-              }}
-
-              onClick={() =>
-                setLang("ar")
-              }
-
-              className={`
-                flex-1
-
-                py-5
-
-                rounded-2xl
-
-                font-bold
-
-                transition-all duration-300
-
-                ${
-                  lang === "ar"
-                    ? "bg-yellow-500 text-black shadow-[0_0_40px_rgba(255,215,0,0.2)]"
-                    : "bg-white/5 border border-white/10 hover:border-yellow-500/30"
-                }
-              `}
-            >
-              العربية
-            </motion.button>
-
-          </div>
-
-        </div>
-
-        {/* ================= ENTER BUTTON ================= */}
-
-        <motion.button
-          whileHover={{
-            scale: 1.02,
-          }}
-
-          whileTap={{
-            scale: 0.98,
-          }}
-
-          onClick={handleEnter}
-
-          className="
-            relative overflow-hidden
-
-            w-full
-
-            bg-yellow-500
-            hover:bg-yellow-400
-
-            text-black
-
-            font-black
-
-            py-5
-
-            rounded-2xl
-
-            transition-all duration-300
-
-            text-lg
-
-            shadow-[0_0_40px_rgba(255,215,0,0.25)]
-          "
-        >
-
-          {/* BUTTON SHINE */}
-
-          <div className="
-            absolute inset-0
-
-            bg-gradient-to-r
-            from-transparent
-            via-white/40
-            to-transparent
-
-            -translate-x-full
-            hover:translate-x-full
-
-            transition duration-1000
-          " />
-
-          <span className="relative z-10">
-
-            {lang === "ar"
-              ? "دخول"
-              : "Enter Experience →"}
-
-          </span>
-
-        </motion.button>
 
       </motion.div>
 

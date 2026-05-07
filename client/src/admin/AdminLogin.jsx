@@ -1,170 +1,682 @@
-import { useState, useEffect } from "react";
-import { loginAdmin } from "../services/authService";
-import { useNavigate } from "react-router-dom";
-import { FaTimes } from "react-icons/fa";
+import {
+  useState,
+  useEffect,
+} from "react";
+
+import {
+  loginAdmin,
+} from "../services/authService";
+
+import {
+  useNavigate,
+} from "react-router-dom";
+
+import {
+  motion,
+} from "framer-motion";
+
+import {
+  FaTimes,
+  FaLock,
+  FaEnvelope,
+  FaShieldAlt,
+} from "react-icons/fa";
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
+  const [email, setEmail] =
+    useState("");
 
-  /* 🔥 BACK BUTTON FIX */
+  const [password, setPassword] =
+    useState("");
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const navigate =
+    useNavigate();
+
+  /* ================= BACK FIX ================= */
+
   useEffect(() => {
+
     const handleBack = () => {
-      navigate("/", { replace: true });
+
+      navigate("/", {
+        replace: true,
+      });
     };
 
-    window.addEventListener("popstate", handleBack);
-    return () => window.removeEventListener("popstate", handleBack);
+    window.addEventListener(
+      "popstate",
+      handleBack
+    );
+
+    return () => {
+
+      window.removeEventListener(
+        "popstate",
+        handleBack
+      );
+    };
+
   }, [navigate]);
 
- const handleLogin = async () => {
-  if (!email || !password) {
-    alert("Please fill all fields");
-    return;
-  }
+  /* ================= LOGIN ================= */
 
-  try {
-    setLoading(true);
+  const handleLogin = async () => {
 
-    await loginAdmin({ email, password });
+    if (!email || !password) {
 
-    navigate("/admin/dashboard");
+      alert(
+        "Please fill all fields"
+      );
 
-  } catch (err) {
-    console.log("Login Error:", err);
+      return;
+    }
 
-    const message =
-      err?.response?.data?.msg ||   // backend error
-      err?.message ||              // axios error
-      (typeof err === "string" ? err : "Login failed"); // fallback
+    try {
 
-    alert(message);
+      setLoading(true);
 
-  } finally {
-    setLoading(false);
-  }
-};
+      await loginAdmin({
+        email,
+        password,
+      });
+
+      navigate(
+        "/admin/dashboard"
+      );
+
+    } catch (err) {
+
+      console.log(
+        "Login Error:",
+        err
+      );
+
+      const message =
+
+        err?.response?.data?.msg ||
+
+        err?.message ||
+
+        (
+          typeof err === "string"
+            ? err
+            : "Login failed"
+        );
+
+      alert(message);
+
+    } finally {
+
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden px-4">
+    <div className="
+      relative
 
-      {/* 🔥 BACKGROUND GLOW */}
-      <div className="absolute w-[500px] h-[500px] bg-yellow-500/10 blur-[120px] rounded-full top-[-100px] left-[-100px]" />
-      <div className="absolute w-[400px] h-[400px] bg-yellow-500/10 blur-[100px] rounded-full bottom-[-100px] right-[-100px]" />
+      min-h-screen
 
-      {/* 🔥 CARD */}
+      bg-[#050505]
+
+      overflow-hidden
+
+      flex items-center
+      justify-center
+
+      px-4
+
+      text-white
+    ">
+
+      {/* ================= CINEMATIC BG ================= */}
+
       <div className="
-        relative z-10
-        w-full max-w-md
-        bg-gradient-to-b from-[#111] to-[#0a0a0a]
-        border border-yellow-500/10
-        rounded-3xl
-        p-8
-        shadow-[0_0_50px_rgba(255,200,0,0.12)]
+        absolute inset-0
       ">
 
-        {/* ❌ CLOSE BUTTON */}
-        <button
-          onClick={() => navigate("/")}
+        {/* GOLD LIGHT */}
+
+        <motion.div
+
+          animate={{
+            scale: [1, 1.1, 1],
+            opacity: [0.4, 0.7, 0.4],
+          }}
+
+          transition={{
+            repeat: Infinity,
+            duration: 8,
+          }}
+
           className="
-            absolute top-4 right-4
-            w-9 h-9 flex items-center justify-center
+            absolute
+
+            top-[-150px]
+            left-[-100px]
+
+            w-[500px]
+            h-[500px]
+
             rounded-full
-            bg-black/60
-            border border-yellow-500/20
-            text-yellow-400
-            hover:bg-yellow-500 hover:text-black
-            transition-all duration-300
+
+            bg-yellow-500/10
+
+            blur-[150px]
           "
-        >
-          <FaTimes size={14} />
-        </button>
+        />
 
-        {/* 🔥 HEADER */}
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-yellow-400 mb-2 tracking-wide">
-            Admin Panel
-          </h2>
-          <p className="text-gray-400 text-sm">
-            Secure access to dashboard
-          </p>
-        </div>
+        {/* GLOW */}
 
-        {/* 🔥 EMAIL */}
-        <div className="mb-4">
-          <label className="text-xs text-gray-400 mb-1 block">
-            Email Address
-          </label>
-          <input
-            type="email"
-            placeholder="Enter email"
-            className="
-              w-full p-3 rounded-xl
-              bg-black/60
-              text-white placeholder-gray-400 caret-yellow-400
-              border border-yellow-500/10
-              outline-none
-              focus:border-yellow-500
-              focus:ring-1 focus:ring-yellow-500/40
-              transition-all duration-300
-            "
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
+        <motion.div
 
-        {/* 🔥 PASSWORD */}
-        <div className="mb-6">
-          <label className="text-xs text-gray-400 mb-1 block">
-            Password
-          </label>
-          <input
-            type="password"
-            placeholder="Enter password"
-            className="
-              w-full p-3 rounded-xl
-              bg-black/60
-              text-white placeholder-gray-400 caret-yellow-400
-              border border-yellow-500/10
-              outline-none
-              focus:border-yellow-500
-              focus:ring-1 focus:ring-yellow-500/40
-              transition-all duration-300
-            "
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
+          animate={{
+            scale: [1, 1.15, 1],
+          }}
 
-        {/* 🔥 BUTTON */}
-        <button
-          onClick={handleLogin}
+          transition={{
+            repeat: Infinity,
+            duration: 10,
+          }}
+
           className="
-            w-full
-            bg-gradient-to-r from-yellow-500 to-yellow-400
-            hover:from-yellow-400 hover:to-yellow-300
-            text-black
-            font-semibold
-            py-3
+            absolute
+
+            bottom-[-200px]
+            right-[-100px]
+
+            w-[600px]
+            h-[600px]
+
             rounded-full
-            transition-all duration-300
-            shadow-[0_0_25px_rgba(255,200,0,0.4)]
-            flex items-center justify-center gap-2
+
+            bg-yellow-400/10
+
+            blur-[180px]
           "
-        >
-          {loading ? (
-            <>
-              <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
-              Logging in...
-            </>
-          ) : (
-            "Login"
-          )}
-        </button>
+        />
+
+        {/* GRID */}
+
+        <div className="
+          absolute inset-0
+
+          opacity-[0.03]
+
+          bg-[linear-gradient(rgba(255,255,255,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.2)_1px,transparent_1px)]
+
+          bg-[size:60px_60px]
+        " />
 
       </div>
+
+      {/* ================= MAIN CARD ================= */}
+
+      <motion.div
+
+        initial={{
+          opacity: 0,
+          y: 40,
+        }}
+
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+
+        transition={{
+          duration: 0.9,
+        }}
+
+        className="
+          relative z-10
+
+          w-full
+          max-w-md
+
+          rounded-[36px]
+
+          border border-yellow-500/10
+
+          bg-gradient-to-b
+          from-white/[0.08]
+          to-white/[0.03]
+
+          backdrop-blur-[30px]
+
+          shadow-[0_0_100px_rgba(255,215,0,0.08)]
+
+          overflow-hidden
+        "
+      >
+
+        {/* TOP LINE */}
+
+        <div className="
+          h-[3px]
+
+          bg-gradient-to-r
+          from-transparent
+          via-yellow-400
+          to-transparent
+        " />
+
+        <div className="
+          p-7 md:p-9
+        ">
+
+          {/* ================= CLOSE ================= */}
+
+          <button
+
+            onClick={() =>
+              navigate("/")
+            }
+
+            className="
+              absolute top-5 right-5
+
+              w-11 h-11
+
+              rounded-2xl
+
+              bg-white/[0.04]
+
+              border border-white/10
+
+              flex items-center
+              justify-center
+
+              text-yellow-400
+
+              hover:bg-yellow-500
+              hover:text-black
+
+              transition-all duration-300
+            "
+          >
+
+            <FaTimes />
+
+          </button>
+
+          {/* ================= HEADER ================= */}
+
+          <div className="
+            text-center
+
+            mb-10
+          ">
+
+            {/* ICON */}
+
+            <motion.div
+
+              animate={{
+                y: [0, -8, 0],
+              }}
+
+              transition={{
+                repeat: Infinity,
+                duration: 3,
+              }}
+
+              className="
+                mx-auto
+
+                mb-6
+
+                w-24 h-24
+
+                rounded-[30px]
+
+                bg-gradient-to-b
+                from-yellow-300
+                to-yellow-500
+
+                text-black
+
+                flex items-center
+                justify-center
+
+                text-4xl
+
+                shadow-[0_20px_60px_rgba(255,215,0,0.2)]
+              "
+            >
+
+              <FaShieldAlt />
+
+            </motion.div>
+
+            {/* TITLE */}
+
+            <h1 className="
+              text-4xl
+
+              font-black
+
+              tracking-[5px]
+
+              text-yellow-400
+
+              drop-shadow-[0_0_20px_rgba(255,215,0,0.25)]
+            ">
+
+              ADMIN
+
+            </h1>
+
+            {/* SUB */}
+
+            <p className="
+              mt-4
+
+              text-gray-400
+
+              leading-relaxed
+
+              text-sm
+            ">
+
+              Secure dashboard access for
+              Al Abraz Interior Management
+
+            </p>
+
+          </div>
+
+          {/* ================= EMAIL ================= */}
+
+          <div className="
+            mb-5
+          ">
+
+            <label className="
+              text-sm
+
+              text-gray-400
+
+              mb-3
+
+              block
+            ">
+
+              Email Address
+
+            </label>
+
+            <div className="
+              relative
+            ">
+
+              <FaEnvelope
+                className="
+                  absolute left-5 top-1/2
+
+                  -translate-y-1/2
+
+                  text-yellow-400/70
+                "
+              />
+
+              <input
+
+                type="email"
+
+                placeholder="Enter admin email"
+
+                value={email}
+
+                onChange={(e) =>
+                  setEmail(
+                    e.target.value
+                  )
+                }
+
+                className="
+                  w-full
+
+                  h-[64px]
+
+                  pl-14 pr-5
+
+                  rounded-2xl
+
+                  bg-white/[0.04]
+
+                  border border-white/10
+
+                  text-white
+
+                  placeholder:text-gray-500
+
+                  outline-none
+
+                  focus:border-yellow-500/40
+
+                  focus:bg-white/[0.06]
+
+                  transition-all duration-300
+                "
+              />
+
+            </div>
+
+          </div>
+
+          {/* ================= PASSWORD ================= */}
+
+          <div className="
+            mb-8
+          ">
+
+            <label className="
+              text-sm
+
+              text-gray-400
+
+              mb-3
+
+              block
+            ">
+
+              Password
+
+            </label>
+
+            <div className="
+              relative
+            ">
+
+              <FaLock
+                className="
+                  absolute left-5 top-1/2
+
+                  -translate-y-1/2
+
+                  text-yellow-400/70
+                "
+              />
+
+              <input
+
+                type="password"
+
+                placeholder="Enter secure password"
+
+                value={password}
+
+                onChange={(e) =>
+                  setPassword(
+                    e.target.value
+                  )
+                }
+
+                className="
+                  w-full
+
+                  h-[64px]
+
+                  pl-14 pr-5
+
+                  rounded-2xl
+
+                  bg-white/[0.04]
+
+                  border border-white/10
+
+                  text-white
+
+                  placeholder:text-gray-500
+
+                  outline-none
+
+                  focus:border-yellow-500/40
+
+                  focus:bg-white/[0.06]
+
+                  transition-all duration-300
+                "
+              />
+
+            </div>
+
+          </div>
+
+          {/* ================= BUTTON ================= */}
+
+          <motion.button
+
+            whileHover={{
+              scale: 1.01,
+            }}
+
+            whileTap={{
+              scale: 0.98,
+            }}
+
+            onClick={handleLogin}
+
+            disabled={loading}
+
+            className="
+              relative
+
+              overflow-hidden
+
+              w-full
+
+              h-[64px]
+
+              rounded-2xl
+
+              bg-yellow-500
+
+              hover:bg-yellow-400
+
+              text-black
+
+              font-black
+
+              text-lg
+
+              shadow-[0_0_50px_rgba(255,215,0,0.2)]
+
+              transition-all duration-300
+            "
+          >
+
+            {/* SHINE */}
+
+            <div className="
+              absolute inset-0
+
+              bg-gradient-to-r
+              from-transparent
+              via-white/40
+              to-transparent
+
+              -translate-x-full
+              hover:translate-x-full
+
+              transition duration-1000
+            " />
+
+            <span className="
+              relative z-10
+
+              flex items-center
+              justify-center
+
+              gap-3
+            ">
+
+              {loading ? (
+
+                <>
+                  <span className="
+                    w-5 h-5
+
+                    border-2 border-black
+
+                    border-t-transparent
+
+                    rounded-full
+
+                    animate-spin
+                  " />
+
+                  Authenticating...
+
+                </>
+
+              ) : (
+
+                <>
+                  <FaShieldAlt />
+
+                  Access Dashboard
+
+                </>
+
+              )}
+
+            </span>
+
+          </motion.button>
+
+          {/* ================= FOOTER ================= */}
+
+          <div className="
+            mt-8
+
+            text-center
+          ">
+
+            <p className="
+              text-xs
+
+              text-gray-500
+
+              leading-relaxed
+            ">
+
+              Protected Admin Access •
+              Kuwait Interior Management System
+
+            </p>
+
+          </div>
+
+        </div>
+
+      </motion.div>
+
     </div>
   );
 };
